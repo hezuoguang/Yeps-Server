@@ -1,0 +1,903 @@
+/*
+Yeps接口文档
+创建时间：2016-02-27
+*/
+
+var api_data = [
+
+    // 注册
+    {
+        "name": "注册",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "register",
+            "data": {
+                "phone":"手机号码",
+                "nick":"昵称",
+                "pwd":"密码(MD5加密后上传)",
+                "photo":"头像url",
+                "sex":"性别(0:男, 1:女)",
+                "tag_list":"标签列表[Python, IOS...]",
+            }
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            "data":{
+                "user_sha1":"用户sha1",
+                "nick":"昵称",
+                "phone":"手机号码",
+                "photo":"头像url",
+                "email":"邮箱",
+                "age":"年(22)",
+                "sex":"性别(男,女)",
+                "intro":"个人简介",
+                "birthday":"生日",
+                "city":"城市",
+                "tag_list":"标签列表[Python, IOS...](字符串)",
+                "create_time":"注册时间(2016-02-27 18:25:30)",
+                "last_active_time":"最后活动时间(2016-02-27 18:25:30)",
+                "access_token":"授权码",
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+        }
+    },
+
+    // 获取系统用户标签列表
+    {
+        "name": "获取系统用户标签列表",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "system_user_tag_list",
+            "data": {
+                
+            }
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            "data":{
+                "tag_list":"标签列表[Python, IOS...]",
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+        }
+    },
+
+    // 登录
+    {
+        "name": "登录",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "login",
+            "data": {
+                "phone":"",
+                "pwd":"MD5加密后上传"
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+                "user_sha1":"用户sha1",
+                "nick":"昵称",
+                "phone":"手机号码",
+                "photo":"头像url",
+                "email":"邮箱",
+                "age":"年(22)",
+                "sex":"性别(男,女)",
+                "intro":"个人简介",
+                "birthday":"生日",
+                "city":"城市",
+                "tag_list":"标签列表[Python, IOS...]",
+                "create_time":"注册时间(2016-02-27 18:25:30)",
+                "last_active_time":"最后活动时间(2016-02-27 18:25:30)",
+                "access_token":"授权码",
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    //获取Status 列表(讨论,投票,易物,发现)
+    {
+        "name": "获取Status 列表(讨论,投票,易物,发现)",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "status_list",
+            "data": {
+                "access_token":"授权码",
+                "since_id":"status_id(获取status_id > since_id的数据,可选,不选则获取最新的)",
+                "max_id":"status_id(获取status_id < max_id的最新数据,可选,若此参数填写,则since_id无效)",
+                "type":"status类型(-1:全部, 0:讨论 1:投票 2:易物 3:发现)",
+                "count":"单页返回的记录条数，最大不超过50，默认为20",
+                "is_follow":"是否只查询关注的好友和自己的Status(0:不是 1:是,默认不是)",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+                "status_list":[
+                    {
+                        "create_user":{
+                            "user_sha1":"user_sha1",
+                            "nick":"昵称",
+                            "photo":"头像url",
+                        },
+                        "status_id":"",
+                        "status_sha1":"Status_sha1",
+                        "title":"标题",
+                        "content":"详细内容",
+                        "image_list":"图片url_list[http://XXX.com/XXX.png,...]",
+                        "type":"类型 0:讨论 1:投票 2:易物 3:发现",
+                        "create_time":"创建时间(2016-02-27 18:21:34)",
+                        "like_count":"点赞数",
+                        "share_count":"分享数",
+                        "comment_conut":"评论数",
+                    },
+                    {
+                        "create_user":{
+                            "user_sha1":"user_sha1",
+                            "nick":"昵称",
+                            "photo":"头像url",
+                        },
+                        "status_id":"",
+                        "status_sha1":"Status_sha1",
+                        "title":"标题",
+                        "content":"详细内容",
+                        "image_list":"图片url_list[http://XXX.com/XXX.png,...]",
+                        "type":"1:投票",
+                        "create_time":"创建时间(2016-02-27 18:21:34)",
+                        "like_count":"点赞数",
+                        "share_count":"分享数",
+                        "comment_conut":"评论数",
+                        "vote":{
+                            "vote_id":"",
+                            "vote_sha1":"选项列表[选项1, 选项二]",
+                            "vote_result":"选项对应的票数[1,10]",
+                            "vote_count":"当前总票数",
+                            "me_is_vote":"我是否参与了投票(0:未参与, 1:参与了)",
+                            "me_vote_option":"我投的选项下标",
+                            "end_time":"结束时间",
+                            "is_end":"是否已经结束(0:未结束, 1:已结束)",
+                        }
+                    }
+                ],
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 获取评论列表
+    {
+        "name": "获取评论列表",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "comment_list",
+            "data": {
+                "access_token":"授权码",
+                "max_id":"commen_id(commen_id < max_id的最新评论,可选,默认获取最新评论)",
+                "status_sha1":"status_sha1",
+            }
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            "data":{
+                "comment_list":[
+                    {
+                        "create_user":{
+                            "user_sha1":"user_sha1",
+                            "nick":"昵称",
+                            "photo":"头像url",
+                        },
+                        "comment_id":"",
+                        "comment_sha1":"Status_sha1",
+                        "content":"评论内容",
+                        "create_time":"创建时间(2016-02-27 18:21:34)",
+                        "is_sub":"是否为子评论(0:不是 1:是)",
+                    },
+                    {
+                        "create_user":{
+                            "user_sha1":"user_sha1",
+                            "nick":"昵称",
+                            "photo":"头像url",
+                        },
+                        "comment_id":"",
+                        "comment_sha1":"Status_sha1",
+                        "content":"评论内容",
+                        "create_time":"创建时间(2016-02-27 18:21:34)",
+                        "is_sub":"1",
+                        "other_user":{
+                            "user_sha1":"user_sha1",
+                            "nick":"昵称",
+                            "photo":"头像url",
+                        }
+                    }
+                ],
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+        }
+    },
+
+    // 发布一条Status
+    {
+        "name": "发布一条Status",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "publish_status",
+            "data": {
+                "access_token":"授权码",
+                "title":"",
+                "content":"",
+                "image_list":"[]",
+                "type":"0:讨论 1:投票 2:易物 3:发现",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+                "create_user":{
+                    "user_sha1":"user_sha1",
+                    "nick":"昵称",
+                    "photo":"头像url",
+                },
+                "status_id":"",
+                "status_sha1":"Status_sha1",
+                "title":"标题",
+                "content":"详细内容",
+                "image_list":"图片url_list[http://XXX.com/XXX.png,...]",
+                "type":"类型 0:讨论 1:投票 2:易物 3:发现",
+                "create_time":"创建时间(2016-02-27 18:21:34)",
+                "like_count":"点赞数",
+                "share_count":"分享数",
+                "comment_conut":"评论数",
+                "vote":{
+                    "vote_sha1":"选项列表[选项1, 选项二]",
+                    "vote_result":"选项对应的票数[1,10]",
+                    "vote_count":"当前总票数",
+                    "me_is_vote":"我是否参与了投票(0:未参与, 1:参与了)",
+                    "me_vote_option":"我投的选项下标",
+                    "end_time":"结束时间",
+                    "is_end":"是否已经结束(0:未结束, 1:已结束)",
+                }
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 发布一条评论
+    {
+        "name": "发布一条评论",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "publish_comment",
+            "data": {
+                "access_token":"授权码",
+                "content":"",
+                "comment_sha1":"可选,如果回复别人的评论则需要",
+                "status_sha1":"status_sha1",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+                    "create_user":{
+                        "user_sha1":"user_sha1",
+                        "nick":"昵称",
+                        "photo":"头像url",
+                    },
+                    "comment_id":"",
+                    "comment_sha1":"Status_sha1",
+                    "content":"评论内容",
+                    "create_time":"创建时间(2016-02-27 18:21:34)",
+                    "is_sub":"是否为子评论(0:不是 1:是)",
+                    "other_user":{
+                        "user_sha1":"user_sha1",
+                        "nick":"昵称",
+                        "photo":"头像url",
+                    }
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 点赞
+    {
+        "name": "点赞",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "click_like",
+            "data": {
+                "access_token":"授权码",
+                "status_sha1":"status_sha1",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 取消点赞
+    {
+        "name": "取消点赞",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "un_like",
+            "data": {
+                "access_token":"授权码",
+                "status_sha1":"status_sha1",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 分享
+    {
+        "name": "分享",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "share_count_add",
+            "data": {
+                "access_token":"授权码",
+                "status_sha1":"status_sha1, 通过第三方分享,分享成功后调用此接口告诉服务器分享成功",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 删除一条Status
+    {
+        "name": "删除一条Status",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "delete_status",
+            "data": {
+                "access_token":"授权码",
+                "status_sha1":"status_sha1",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 删除一条评论
+    {
+        "name": "删除一条评论",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "delete_status",
+            "data": {
+                "access_token":"授权码",
+                "comment_sha1":"comment_sha1",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 关注
+    {
+        "name": "关注",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "follow",
+            "data": {
+                "access_token":"授权码",
+                "user_sha1":"要关注的用户的sha1",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 取消关注
+    {
+        "name": "取消关注",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "remove_follow",
+            "data": {
+                "access_token":"授权码",
+                "user_sha1":"要取消关注的用户的sha1",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 更换头像
+    {
+        "name": "更换头像",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "update_photo",
+            "data": {
+                "access_token":"授权码",
+                "photo":"头像url",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 更新用户标签
+    {
+        "name": "更新用户标签",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "update_tag_list",
+            "data": {
+                "access_token":"授权码",
+                "tag_list":"标签索引[0,1,2...]",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 更新用户密码
+    {
+        "name": "更新用户密码",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "update_pwd",
+            "data": {
+                "access_token":"授权码",
+                "old_pwd":"旧密码(MD5加密后上传)",
+                "new_pwd":"新密码(MD5加密后上传)",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    //更新用户简介
+    {
+        "name": "更新用户简介",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "update_intro",
+            "data": {
+                "access_token":"授权码",
+                "intro":"个人简介",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 更新用户资料
+    {
+        "name": "更新用户资料",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "update_info",
+            "data": {
+                "access_token":"授权码",
+                "nick":"昵称",
+                "photo":"头像url",
+                "email":"邮箱",
+                "age":"年(22)",
+                "sex":"性别(0/1)",
+                "birthday":"生日(1999-12-23)",
+                "city":"城市",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 获取用户关注列表
+    {
+        "name": "获取用户关注列表",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "follow_user_list",
+            "data": {
+                "access_token":"授权码",
+                "max_id":"获取follow_id < max_id的最新数据,可选,默认返回最新",
+                "count":"可选,最大不超过50,默认返回20条",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+                "user_list":[
+                    {
+                        "follow_id":"",
+                        "user_sha1":"user_sha1",
+                        "nick":"昵称",
+                        "photo":"头像url",
+                    }
+                ],
+                "total_count":"总关注数"
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 获取系统推荐用户列表
+    {
+        "name": "获取系统推荐用户列表",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "recommend_user_list",
+            "data": {
+                "access_token":"授权码",
+                "max_id":"获取follow_id < max_id的最新数据,可选,默认返回最新",
+                "count":"可选,最大不超过50,默认返回20条",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+                "user_list":[
+                    {
+                        "follow_id":"",
+                        "user_sha1":"user_sha1",
+                        "nick":"昵称",
+                        "photo":"头像url",
+                    }
+                ],
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 搜索用户
+    {
+        "name": "搜索用户",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "search_user_list",
+            "data": {
+                "access_token":"授权码",
+                "max_id":"获取follow_id < max_id的最新数据,可选,默认返回最新",
+                "count":"可选,最大不超过50,默认返回20条",
+                "key":"搜索关键字(匹配nick)",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+                "user_list":[
+                    {
+                        "follow_id":"",
+                        "user_sha1":"user_sha1",
+                        "nick":"昵称",
+                        "photo":"头像url",
+                    }
+                ],
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 获取其他用户资料
+    {
+        "name": "获取其他用户资料",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "get_user_info",
+            "data": {
+                "access_token":"授权码",
+                "user_sha1":"",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+                "user_sha1":"用户sha1",
+                "nick":"昵称",
+                "phone":"手机号码",
+                "photo":"头像url",
+                "email":"邮箱",
+                "age":"年(22)",
+                "sex":"性别(男,女)",
+                "intro":"个人简介",
+                "birthday":"生日",
+                "city":"城市",
+                "tag_list":"标签列表[Python, IOS...](字符串)",
+                "create_time":"注册时间(2016-02-27 18:25:30)",
+                "last_active_time":"最后活动时间(2016-02-27 18:25:30)",
+                "is_follow":"我是否关注了他(0:未关注, 1:关注了)",
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 获取消息列表
+    {
+        "name": "获取消息列表",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "message_list",
+            "data": {
+                "access_token":"授权码",
+                "max_id":"获取message_id < max_id的最新数据,可选,默认返回最新",
+                "count":"可选,最大不超过50,默认返回20条",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+                "message_list":[
+                    {
+                        "other_user":{
+                            "user_sha1":"user_sha1",
+                            "nick":"昵称",
+                            "photo":"头像url",
+                        },
+                        "message_id":"",
+                        "message_sha1":"",
+                        "content":"消息内容",
+                        "type":"0 未读, 1 已读",
+                    }
+                ],
+                "total_count":"总消息条数",
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 将消息设为已读
+    {
+        "name": "将消息设为已读",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "read_message",
+            "data": {
+                "access_token":"授权码",
+                "message_sha1":"",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+]
+
