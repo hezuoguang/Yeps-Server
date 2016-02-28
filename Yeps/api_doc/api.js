@@ -5,50 +5,6 @@ Yeps接口文档
 
 var api_data = [
 
-    // 注册
-    {
-        "name": "注册",
-        "url": "/yeps/api/",
-        "method": "POST",
-        "params": {
-            "action": "register",
-            "data": {
-                "phone":"手机号码",
-                "nick":"昵称",
-                "pwd":"密码(MD5加密后上传)",
-                "photo":"头像url",
-                "sex":"性别(0:男, 1:女)",
-                "tag_list":"标签列表[Python, IOS...]",
-            }
-        },
-        "response": {
-            "info": "OK",
-            "ret": "0001",
-            "data":{
-                "user_sha1":"用户sha1",
-                "nick":"昵称",
-                "phone":"手机号码",
-                "photo":"头像url",
-                "email":"邮箱",
-                "age":"年(22)",
-                "sex":"性别(男,女)",
-                "intro":"个人简介",
-                "birthday":"生日",
-                "city":"城市",
-                "tag_list":"标签列表[Python, IOS...](字符串)",
-                "create_time":"注册时间(2016-02-27 18:25:30)",
-                "last_active_time":"最后活动时间(2016-02-27 18:25:30)",
-                "access_token":"授权码",
-            }
-        },
-        "note": {
-            "请求参数": "-------------",
-            "返回参数": "-------------",
-            "info": "OK",
-            "ret": "0001",
-        }
-    },
-
     // 获取系统用户标签列表
     {
         "name": "获取系统用户标签列表",
@@ -64,7 +20,119 @@ var api_data = [
             "info": "OK",
             "ret": "0001",
             "data":{
+                "tag_list":[
+                    "Python",
+                    "IOS"
+                ],
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+        }
+    },
+
+    // 获取热门大学列表
+    {
+        "name": "获取热门大学列表",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "active_university_list",
+            "data": {
+                
+            }
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            "data":{
+                "university_list":[
+                    "北京大学",
+                    "北京林业大学",
+                    "湖南大学",
+                    "怀化学院"
+                ],
+                "total_count":"",
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+        }
+    },
+
+    // 获取所有大学列表
+    {
+        "name": "获取所有大学列表",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "system_university_list",
+            "data": {
+                
+            }
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            "data":{
+                "university_list":[
+                    "北京大学",
+                    "北京林业大学",
+                    "湖南大学",
+                    "怀化学院"
+                ],
+                "total_count":"",
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+        }
+    },
+
+    // 注册
+    {
+        "name": "注册",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "register",
+            "data": {
+                "phone":"手机号码",
+                "nick":"昵称",
+                "pwd":"密码(MD5加密后上传)",
+                "photo":"头像url",
+                "sex":"性别(0:男, 1:女)",
                 "tag_list":"标签列表[Python, IOS...]",
+                "university":"大学(注册后无法修改)",
+            }
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            "data":{
+                "user_sha1":"用户sha1",
+                "nick":"昵称",
+                "phone":"手机号码",
+                "photo":"头像url",
+                "email":"邮箱",
+                "age":"年(22)",
+                "sex":"性别(男,女)",
+                "intro":"个人简介",
+                "birthday":"生日",
+                "university":"大学",
+                "tag_list":"标签列表[Python, IOS...](字符串)",
+                "create_time":"注册时间(2016-02-27 18:25:30)",
+                "last_active_time":"最后活动时间(2016-02-27 18:25:30)",
+                "access_token":"授权码",
             }
         },
         "note": {
@@ -100,11 +168,38 @@ var api_data = [
                 "sex":"性别(男,女)",
                 "intro":"个人简介",
                 "birthday":"生日",
-                "city":"城市",
+                "university":"大学",
                 "tag_list":"标签列表[Python, IOS...]",
                 "create_time":"注册时间(2016-02-27 18:25:30)",
                 "last_active_time":"最后活动时间(2016-02-27 18:25:30)",
                 "access_token":"授权码",
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 切换用户当前活动大学
+    {
+        "name": "切换用户当前活动大学",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "switch_active_university",
+            "data": {
+                "access_token":"授权码",
+                "university":"此字段回去匹配Status.university, 若用户想获取其他大学的Status,需先更新次字段",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
             }
         },
         "note": {
@@ -148,11 +243,12 @@ var api_data = [
                         "title":"标题",
                         "content":"详细内容",
                         "image_list":"图片url_list[http://XXX.com/XXX.png,...]",
-                        "type":"类型 0:讨论 1:投票 2:易物 3:发现",
+                        "type":"类型 0:微交流(讨论) 1:微评选(投票) 2:随手拍 3:一起玩 4:发现 5:二手",
                         "create_time":"创建时间(2016-02-27 18:21:34)",
                         "like_count":"点赞数",
                         "share_count":"分享数",
                         "comment_conut":"评论数",
+                        "university":"大学",
                     },
                     {
                         "create_user":{
@@ -165,11 +261,12 @@ var api_data = [
                         "title":"标题",
                         "content":"详细内容",
                         "image_list":"图片url_list[http://XXX.com/XXX.png,...]",
-                        "type":"1:投票",
+                        "type":"1:微评选",
                         "create_time":"创建时间(2016-02-27 18:21:34)",
                         "like_count":"点赞数",
                         "share_count":"分享数",
                         "comment_conut":"评论数",
+                        "university":"大学",
                         "vote":{
                             "vote_id":"",
                             "vote_sha1":"选项列表[选项1, 选项二]",
@@ -251,6 +348,73 @@ var api_data = [
         }
     },
 
+    // 获取Status评论数,点赞数,分享数
+    {
+        "name": "获取Status评论数,点赞数,分享数",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "status_count",
+            "data": {
+                "access_token":"授权码",
+                "status_sha1":"status_sha1",
+            }
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            "data":{
+                "like_count":"点赞数",
+                "share_count":"分享数",
+                "comment_conut":"评论数",
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+        }
+    },
+
+    // 用户参与投票
+    {
+        "name": "用户参与投票",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "join_vote",
+            "data": {
+                "access_token":"授权码",
+                "vote_sha1":"vote_sha1",
+                "vote_option_index":"所投选项",
+                "content":"附加说明"
+            }
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            "data":{
+                "vote":{
+                    "vote_id":"",
+                    "vote_sha1":"选项列表[选项1, 选项二]",
+                    "vote_result":"选项对应的票数[1,10]",
+                    "vote_count":"当前总票数",
+                    "me_is_vote":"我是否参与了投票(0:未参与, 1:参与了)",
+                    "me_vote_option":"我投的选项下标",
+                    "end_time":"结束时间",
+                    "is_end":"是否已经结束(0:未结束, 1:已结束)",
+                }
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+        }
+    },
+
     // 发布一条Status
     {
         "name": "发布一条Status",
@@ -263,7 +427,11 @@ var api_data = [
                 "title":"",
                 "content":"",
                 "image_list":"[]",
-                "type":"0:讨论 1:投票 2:易物 3:发现",
+                "type":"类型 0:微交流(讨论) 1:微评选(投票) 2:随手拍 3:一起玩 4:发现 5:二手",
+                "vote":{
+                    "vote_option":"[]选项列表[选项1, 选项二]",
+                    "end_time":"结束时间(0:6小时后, 1:12小时后, 2:1天后, 3:3天后, 4:7天后)"
+                }
             },
         },
         "response": {
@@ -538,9 +706,9 @@ var api_data = [
         }
     },
 
-    // 更换头像
+    // 更新头像
     {
-        "name": "更换头像",
+        "name": "更新头像",
         "url": "/yeps/api/",
         "method": "POST",
         "params": {
@@ -574,7 +742,7 @@ var api_data = [
             "action": "update_tag_list",
             "data": {
                 "access_token":"授权码",
-                "tag_list":"标签索引[0,1,2...]",
+                "tag_list":"[Python, IOS]",
             },
         },
         "response": {
@@ -876,6 +1044,33 @@ var api_data = [
     // 将消息设为已读
     {
         "name": "将消息设为已读",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "read_message",
+            "data": {
+                "access_token":"授权码",
+                "message_sha1":"",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 删除消息
+    {
+        "name": "删除消息",
         "url": "/yeps/api/",
         "method": "POST",
         "params": {

@@ -27,8 +27,10 @@ class User(models.Model):
     intro = models.CharField(max_length=255, default="一句话介绍自己^_^")
     # 生日
     birthday = models.DateTimeField(auto_now_add = True)
-    # 城市
-    city = models.CharField(max_length = 255, default = "广州")
+    # 大学
+    university = models.CharField(max_length = 255, default = "怀化学院")
+    # 当前活动大学
+    active_university = models.CharField(max_length = 255, default = "怀化学院")
     # 注册时间
     create_time = models.DateTimeField(auto_now_add=True)
     # 最后活动时间
@@ -51,7 +53,7 @@ class Status(models.Model):
     content = models.TextField()
     # 图片链接 [iamge_url1,image_url2...]
     image_list = models.TextField(blank = True)
-    #类型 0:讨论 1:投票 2:易物 3:发现
+    #类型 0:微交流(讨论) 1:微评选(投票) 2:随手拍 3:一起玩 4:发现 5:二手
     type = models.SmallIntegerField(default=0)
     # 创建时间
     create_time = models.DateTimeField(auto_now_add=True)
@@ -63,6 +65,8 @@ class Status(models.Model):
     comment_count = models.IntegerField(default=0)
     # 状态 0 正常 1 删除
     status = models.IntegerField(default=0)
+    # 大学
+    university = models.CharField(max_length = 255, default = "怀化学院")
 
 # 投票信息
 class Vote(models.Model):
