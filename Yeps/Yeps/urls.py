@@ -10,3 +10,11 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
 )
+
+urlpatterns += patterns('Yep.api_router',
+    # Examples:
+    # url(r'^$', 'Yeps.views.home', name='home'),
+    # url(r'^blog/', include('blog.urls')),
+
+    url(r'^yeps/api/', "api_router"),
+)

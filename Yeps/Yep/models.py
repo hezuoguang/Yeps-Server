@@ -41,6 +41,14 @@ class User(models.Model):
     access_token = models.CharField(max_length=32)
 
 
+# 已激活的大学
+class ActiveUniversity(models.Model):
+    university = models.CharField(max_length = 255, default = "怀化学院")
+    # 激活时间
+    active_time = models.DateTimeField(auto_now_add=True)
+    # 激活账户
+    user_sha1 = models.CharField(max_length=40)
+
 # 状态
 class Status(models.Model):
     # sha1 create_sha1 + time
@@ -70,7 +78,7 @@ class Status(models.Model):
 
 # 投票信息
 class Vote(models.Model):
-    # sha1 create_sha1 + time
+    # sha1 status_sha1 + time
     sha1 = models.CharField(max_length=40)
     # 状态sha1
     status_sha1 = models.CharField(max_length=40)
