@@ -47,7 +47,7 @@ def get_user_full_info(user_sha1):
     user = User.objects.get(sha1=user_sha1)
     user_info = dict(
         user_sha1 = user.sha1,
-        nike = user.nick,
+        nick = user.nick,
         phone = user.phone,
         photo = user.photo,
         email = user.email,
@@ -56,6 +56,7 @@ def get_user_full_info(user_sha1):
         introl = user.intro,
         birthday = tools.date_time_to_str(user.birthday),
         university = user.university,
+        active_university = user.active_university,
         tag_list = json.loads(user.tag_list),
         create_time = tools.date_time_to_str(user.create_time),
         last_active_time = tools.date_time_to_str(user.last_active_time),
@@ -76,6 +77,7 @@ def create_user(nick, phone, pwd, photo, sex, tag_list, university):
     user.sex = sex
     user.tag_list = json.dumps(tag_list)
     user.university = university
+    user.active_university = university
     user.access_token = tools.init_access_token(sha1, pwd)
     user.save()
     active_university = ActiveUniversity.objects.filter(university=university).first()
@@ -98,7 +100,7 @@ def user_with_access_token(access_token):
 # 切换用户当前活动大学
 def switch_active_university(access_token, university):
     try:
-        user = User.objects.get(access_token=access_token)
+        user = user_with_access_token(access_token)
         user.active_university = university
         user.save()
         return True
@@ -109,6 +111,7 @@ def switch_active_university(access_token, university):
 def get_follow_list(user_sha1):
     follows = Follow.objects.filter(user_sha1=user_sha1)
     sha1_list = []
+    sha1_list.append(user_sha1)
     for follow in follows:
         sha1_list.append(follow.other_user_sha1)
     return sha1_list
@@ -116,20 +119,20 @@ def get_follow_list(user_sha1):
 
 # 获取id 大于sinace_id的status数据
 def get_new_status_list(access_token, sinace_id, type, count, is_follow):
+    user = user_with_access_token(access_token)
     if is_follow != 0:
-        user = user_with_access_token(access_token)
         sha1_list = get_follow_list(user.sha1)
         if sinace_id != -1:
-            statuses = Status.objects.filter(id__gt=sinace_id, type=type, status=0).filter(user_sha1__in=sha1_list).order_by("id")[0:count]
+            statuses = Status.objects.filter(id__gt=sinace_id,status=0,university=user.active_university).filter(user_sha1__in=sha1_list).order_by("id")[0:count]
             statuses = sorted(statuses, key=lambda s1:-s1.id)[0 : count]
         else:
-            statuses = Status.objects.filter(type=type, status=0).filter(user_sha1__in=sha1_list).order_by("-id")[0:count]
+            statuses = Status.objects.filter(status=0,university=user.active_university).filter(user_sha1__in=sha1_list).order_by("-id")[0:count]
     else:
         if sinace_id != -1:
-            statuses = Status.objects.filter(id__gt=sinace_id, type=type, status=0).order_by("id")[0:count]
+            statuses = Status.objects.filter(id__gt=sinace_id, type=type, status=0,university=user.active_university).order_by("id")[0:count]
             statuses = sorted(statuses, key=lambda s1:-s1.id)[0 : count]
         else:
-            statuses = Status.objects.filter(type=type, status=0).order_by("-id")[0:count]
+            statuses = Status.objects.filter(type=type, status=0,university=user.active_university).order_by("-id")[0:count]
     status_list = []
     for status in statuses:
         tmp = status_to_dict(user, status)
@@ -138,12 +141,12 @@ def get_new_status_list(access_token, sinace_id, type, count, is_follow):
 
 # 获取id 小于max_id的status数据
 def get_old_status_list(access_token, max_id, type, count, is_follow):
+    user = user_with_access_token(access_token)
     if is_follow != 0:
-        user = user_with_access_token(access_token)
         sha1_list = get_follow_list(user.sha1)
-        statuses = Status.objects.filter(id__lt=max_id, type=type, status=0).filter(user_sha1__in=sha1_list).order_by("-id")[0:count]
+        statuses = Status.objects.filter(id__lt=max_id, type=type, status=0,university=user.active_university).filter(user_sha1__in=sha1_list).order_by("-id")[0:count]
     else:
-        statuses = Status.objects.filter(id__lt=max_id, type=type, status=0).order_by("-id")[0:count]
+        statuses = Status.objects.filter(id__lt=max_id, type=type, status=0,university=user.active_university).order_by("-id")[0:count]
     status_list = []
     for status in statuses:
         tmp = status_to_dict(user, status)
@@ -151,25 +154,38 @@ def get_old_status_list(access_token, max_id, type, count, is_follow):
     return status_list
 
 # 获取status 的详细信息,以字典形式返回
-def status_to_dict(user, status):
+def status_to_dict(user, status, is_detail=False):
     tmp = {}
     create_user = User.objects.filter(sha1=status.user_sha1).first()
     tmp["status_id"] = status.id
     tmp["status_sha1"] = status.sha1
     tmp["title"] = status.title
-    tmp["content"] = status.content
-    tmp["image_list"] = json.loads(status.image_list)
+    content = status.content
+    # if not is_detail:
+    #     if len(content) > 60:
+    #         content = content[0:60] + "..."
+    tmp["content"] = content
+    try:
+        tmp["image_list"] = json.loads(status.image_list)
+    except Exception,e:
+        tmp["image_list"] = []
     tmp["type"] = status.type
     tmp["create_time"] = tools.date_time_to_str(status.create_time)
     tmp["like_count"] = status.like_count
     tmp["share_count"] = status.share_count
-    tmp["comment_conut"] = status.comment_conut
+    tmp["comment_conut"] = status.comment_count
     tmp["university"] = status.university
     tmp["create_user"] = {
         'user_sha1': create_user.sha1,
         'nick': create_user.nick,
         'photo': create_user.photo
     }
+
+    like = Like.objects.filter(user_sha1=user.sha1, status_sha1=status.sha1).first()
+    if like:
+        tmp["me_is_like"] = True
+    else:
+        tmp["me_is_like"] = False
     if status.type == 1:
         vote = Vote.objects.filter(status_sha1=status.sha1).first()
         if not vote.is_end:
@@ -181,7 +197,7 @@ def status_to_dict(user, status):
             'vote_result': json.loads(vote.vote_result),
             'vote_option': json.loads(vote.vote_option),
             'vote_count': vote.vote_count,
-            'end_time': vote.end_time,
+            'end_time': tools.date_time_to_str(vote.end_time),
             'is_end': vote.is_end,
         }
         record = VoteRecord.objects.filter(user_sha1=user.sha1, vote_sha1=vote.sha1).first()
@@ -215,7 +231,8 @@ def comment_list(access_token, status_sha1, max_id):
         comments = Comment.objects.filter(status_sha1=status_sha1, id__lt=max_id, status=0).order_by('-id')[0:20]
     com_list = []
     for comment in comments:
-        com_list.append(comment_to_dict(comment))
+        #id小的在前
+        com_list.insert(0,comment_to_dict(comment))
     return com_list
 
 # 获取Status评论数,点赞数,分享数

@@ -180,6 +180,7 @@ var api_data = [
                 "intro":"个人简介",
                 "birthday":"生日",
                 "university":"大学",
+                "active_university":"当前活动学校",
                 "tag_list":"标签列表[Python, IOS...](字符串)",
                 "create_time":"注册时间(2016-02-27 18:25:30)",
                 "last_active_time":"最后活动时间(2016-02-27 18:25:30)",
@@ -220,6 +221,7 @@ var api_data = [
                 "intro":"个人简介",
                 "birthday":"生日",
                 "university":"大学",
+                "active_university":"当前活动学校",
                 "tag_list":"标签列表[Python, IOS...]",
                 "create_time":"注册时间(2016-02-27 18:25:30)",
                 "last_active_time":"最后活动时间(2016-02-27 18:25:30)",
@@ -300,6 +302,7 @@ var api_data = [
                         "share_count":"分享数",
                         "comment_conut":"评论数",
                         "university":"大学",
+                        "me_is_like":"我是否点过赞",
                     },
                     {
                         "create_user":{
@@ -318,6 +321,7 @@ var api_data = [
                         "share_count":"分享数",
                         "comment_conut":"评论数",
                         "university":"大学",
+                        "me_is_like":"我是否点过赞",
                         "vote":{
                             "vote_sha1":"",
                             "vote_option":"选项列表[选项1, 选项二]",
@@ -330,6 +334,62 @@ var api_data = [
                         }
                     }
                 ],
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    //获取Status 详情
+    {
+        "name": "获取Status详情",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "status_detail",
+            "data": {
+                "access_token":"授权码",
+                "status_sha1":"",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+                "status":{
+                    "create_user":{
+                        "user_sha1":"user_sha1",
+                        "nick":"昵称",
+                        "photo":"头像url",
+                    },
+                    "status_id":"",
+                    "status_sha1":"Status_sha1",
+                    "title":"标题",
+                    "content":"详细内容",
+                    "image_list":"图片url_list[http://XXX.com/XXX.png,...]",
+                    "type":"1:微评选",
+                    "create_time":"创建时间(2016-02-27 18:21:34)",
+                    "like_count":"点赞数",
+                    "share_count":"分享数",
+                    "comment_conut":"评论数",
+                    "university":"大学",
+                    "me_is_like":"我是否点过赞",
+                    "vote":{
+                        "vote_sha1":"",
+                        "vote_option":"选项列表[选项1, 选项二]",
+                        "vote_result":"选项对应的票数[1,10]",
+                        "vote_count":"当前总票数",
+                        "me_is_vote":"我是否参与了投票(0:未参与, 1:参与了)",
+                        "me_vote_option":"我投的选项下标",
+                        "end_time":"结束时间",
+                        "is_end":"是否已经结束(0:未结束, 1:已结束)",
+                    }
+                }
             }
         },
         "note": {
@@ -366,7 +426,7 @@ var api_data = [
                             "photo":"头像url",
                         },
                         "comment_id":"",
-                        "comment_sha1":"Status_sha1",
+                        "comment_sha1":"comment_sha1",
                         "content":"评论内容",
                         "create_time":"创建时间(2016-02-27 18:21:34)",
                         "is_sub":"是否为子评论(0:不是 1:是)",
@@ -378,7 +438,7 @@ var api_data = [
                             "photo":"头像url",
                         },
                         "comment_id":"",
-                        "comment_sha1":"Status_sha1",
+                        "comment_sha1":"comment_sha1",
                         "content":"评论内容",
                         "create_time":"创建时间(2016-02-27 18:21:34)",
                         "is_sub":"1",
@@ -542,6 +602,7 @@ var api_data = [
             "info": "OK",
             "ret": "0001",
             'data':{
+                "comment":{
                     "create_user":{
                         "user_sha1":"user_sha1",
                         "nick":"昵称",
@@ -557,6 +618,10 @@ var api_data = [
                         "nick":"昵称",
                         "photo":"头像url",
                     }
+                },
+                "like_count":"点赞数",
+                "share_count":"分享数",
+                "comment_conut":"评论数",
             }
         },
         "note": {
@@ -568,7 +633,7 @@ var api_data = [
         }
     },
 
-    // 点赞
+    // 点赞/取消点赞
     {
         "name": "点赞",
         "url": "/yeps/api/",
@@ -584,33 +649,9 @@ var api_data = [
             "info": "OK",
             "ret": "0001",
             'data':{
-            }
-        },
-        "note": {
-            "请求参数": "-------------",
-            "返回参数": "-------------",
-            "info": "OK",
-            "ret": "0001",
-            
-        }
-    },
-
-    // 取消点赞
-    {
-        "name": "取消点赞",
-        "url": "/yeps/api/",
-        "method": "POST",
-        "params": {
-            "action": "un_like",
-            "data": {
-                "access_token":"授权码",
-                "status_sha1":"status_sha1",
-            },
-        },
-        "response": {
-            "info": "OK",
-            "ret": "0001",
-            'data':{
+                "like_count":"点赞数",
+                "share_count":"分享数",
+                "comment_conut":"评论数",
             }
         },
         "note": {
@@ -638,6 +679,9 @@ var api_data = [
             "info": "OK",
             "ret": "0001",
             'data':{
+                "like_count":"点赞数",
+                "share_count":"分享数",
+                "comment_conut":"评论数",
             }
         },
         "note": {

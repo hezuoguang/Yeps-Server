@@ -112,6 +112,7 @@ class ManageApi:
             is_follow = params.get('is_follow', 0)
             result["data"]['status_list'] = api_tools.status_list(access_token, since_id, max_id, type, count, is_follow)
         except Exception,e:
+            print(e)
             result["ret"] = Status.REQUESTPARAMSERROR
             result["info"] = Status().getReason(result["ret"])
             return result
@@ -190,13 +191,8 @@ class ManageApi:
         result = init_response_result()
         return result
 
-    # 点赞
+    # 点赞/取消点赞
     def click_like(self, request, params):
-        result = init_response_result()
-        return result
-
-    # 取消点赞
-    def un_like(self, request, params):
         result = init_response_result()
         return result
 

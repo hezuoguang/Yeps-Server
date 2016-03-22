@@ -37,6 +37,8 @@ class User(models.Model):
     last_active_time = models.DateTimeField(auto_now_add=True)
     # 标签[]
     tag_list = models.TextField(default="[]")
+    # 相册[]
+    # image_list = models.TextField(default="[]")
     # 授权码
     access_token = models.CharField(max_length=32)
 
@@ -123,7 +125,7 @@ class Comment(models.Model):
     # 是否为子评论
     is_sub = models.BooleanField(default=False)
     # 父评论sha1
-    comment_sha1 = models.CharField(max_length=40)
+    comment_sha1 = models.CharField(max_length=40, null=True)
     # 状态 0 正常 1 删除
     status = models.IntegerField(default=0)
 
@@ -148,4 +150,11 @@ class Message(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
 
 
+# 匹配(交友)
+class Match(models.Model):
+    user_sha1 = models.CharField(max_length=40)
+    other_user_sha1 = models.CharField(max_length=40)
+    # 喜欢:1, 不喜欢0
+    option = models.IntegerField(default=0)
+    create_time = models.DateTimeField(auto_now_add=True)
 

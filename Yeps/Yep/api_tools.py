@@ -67,7 +67,7 @@ def login(phone, pwd):
 # 切换用户当前活动大学
 def switch_active_university(access_token, university):
     result = init_response_result()
-    if db_tools.switch_active_university(access_token, university):
+    if not db_tools.switch_active_university(access_token, university):
         result['ret'] = Status.UNKNOWNERR
         result['info'] = Status().getReason(result['ret'])
     return result
