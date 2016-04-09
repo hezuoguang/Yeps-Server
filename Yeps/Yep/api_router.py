@@ -174,8 +174,9 @@ class ManageApi:
             if type < 0:
                 raise ValueError
             if type == 1:
-                vote_option = params['vote_option']
-                end_time = params.get('end_time', 3)
+                vote = params['vote']
+                vote_option = vote['vote_option']
+                end_time = vote.get('end_time', 3)
             else:
                 vote_option = []
                 end_time = 3
@@ -189,16 +190,42 @@ class ManageApi:
     # 发布一条评论
     def publish_comment(self, request, params):
         result = init_response_result()
+        try:
+            access_token = params['access_token']
+            content = params['content']
+            status_sha1 = params['status_sha1']
+            comment_sha1 = params.get('comment_sha1', None)
+            result["data"] = api_tools.publish_comment(access_token, content, status_sha1, comment_sha1)
+        except Exception,e:
+            result["ret"] = Status.REQUESTPARAMSERROR
+            result["info"] = Status().getReason(result["ret"])
+            return result
         return result
 
     # 点赞/取消点赞
     def click_like(self, request, params):
         result = init_response_result()
+        try:
+            access_token = params['access_token']
+            status_sha1 = params['status_sha1']
+            result["data"] = api_tools.click_like(access_token, status_sha1)
+        except Exception,e:
+            result["ret"] = Status.REQUESTPARAMSERROR
+            result["info"] = Status().getReason(result["ret"])
+            return result
         return result
 
     # 分享
     def share_count_add(self, request, params):
         result = init_response_result()
+        try:
+            access_token = params['access_token']
+            status_sha1 = params['status_sha1']
+            result["data"] = api_tools.share_count_add(access_token, status_sha1)
+        except Exception,e:
+            result["ret"] = Status.REQUESTPARAMSERROR
+            result["info"] = Status().getReason(result["ret"])
+            return result
         return result
 
     # 删除一条Status

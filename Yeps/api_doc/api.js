@@ -478,6 +478,7 @@ var api_data = [
                 "like_count":"点赞数",
                 "share_count":"分享数",
                 "comment_conut":"评论数",
+                "me_is_like":"我是否点过赞",
             }
         },
         "note": {
@@ -652,6 +653,7 @@ var api_data = [
                 "like_count":"点赞数",
                 "share_count":"分享数",
                 "comment_conut":"评论数",
+                "me_is_like":"我是否点过赞",
             }
         },
         "note": {

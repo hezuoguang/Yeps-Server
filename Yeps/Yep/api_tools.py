@@ -93,4 +93,16 @@ def join_vote(access_token, vote_sha1, vote_option_index, content):
 
 # 发布一条状态
 def publish_status(access_token, title, content, image_list, type, vote_option=[], end_time=3):
-    return db_tools.publish_status(access_token, title, content, image_list, type, vote_option=[], end_time=3)
+    return db_tools.publish_status(access_token, title, content, image_list, type, vote_option, end_time)
+
+# 发布一条评论
+def publish_comment(access_token, content, status_sha1, comment_sha1):
+    return db_tools.publish_comment(access_token, content, status_sha1, comment_sha1)
+
+# 点赞/取消点赞
+def click_like(access_token, status_sha1):
+    return db_tools.click_like(access_token, status_sha1)
+
+# 分享成功
+def share_count_add(access_token, status_sha1):
+    return db_tools.share_count_add(access_token, status_sha1)

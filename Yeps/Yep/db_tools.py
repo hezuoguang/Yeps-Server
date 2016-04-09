@@ -237,12 +237,18 @@ def comment_list(access_token, status_sha1, max_id):
 
 # 获取Status评论数,点赞数,分享数
 def status_count(access_token, status_sha1):
+    user = user_with_access_token(access_token)
     status = Status.objects.get(sha1=status_sha1)
     tmp = {
         'like_count': status.like_count,
         'share_count': status.share_count,
         'comment_conut': status.comment_count
     }
+    like = Like.objects.filter(user_sha1=user.sha1, status_sha1=status.sha1).first()
+    if like:
+        tmp["me_is_like"] = True
+    else:
+        tmp["me_is_like"] = False
     return tmp
 
 # 用户参与投票
@@ -302,7 +308,59 @@ def publish_status(access_token, title, content, image_list, type, vote_option=[
 
         for i in range(len(vote_option)):
             vote_result.append(0)
-        vote.vote_result = json.dumps(vote_option)
+        vote.vote_result = json.dumps(vote_result)
         vote.save()
     status.save()
     return status_to_dict(user, status)
+
+# 发布一条评论
+def publish_comment(access_token, content, status_sha1, comment_sha1):
+    user = user_with_access_token(access_token)
+    status = Status.objects.get(sha1=status_sha1)
+
+    now = datetime.datetime.now()
+    sha1 = tools.sha1_with_args(status_sha1, user.sha1, str(now))
+
+    comment = Comment()
+    comment.sha1 = sha1
+    comment.status_sha1 = status_sha1
+    comment.user_sha1 = user.sha1
+    comment.content = content
+    comment.comment_sha1 = ""
+    if comment_sha1:
+        comment.is_sub = True
+        comment.comment_sha1 = comment_sha1
+    comment.save()
+    status.comment_count += 1
+    status.save()
+    data = dict()
+    data['comment'] = comment_to_dict(comment)
+    data.update(status_count(access_token, status_sha1))
+
+    return data
+
+# 点赞/取消点赞
+def click_like(access_token, status_sha1):
+    user = user_with_access_token(access_token)
+    status = Status.objects.get(sha1=status_sha1)
+    like = Like.objects.filter(user_sha1=user.sha1,status_sha1=status_sha1)
+    if like.count() != 0:
+        status.like_count -= like.count()
+        like.delete()
+    else:
+        like = Like()
+        like.status_sha1 = status_sha1
+        like.user_sha1 = user.sha1
+        like.save()
+        status.like_count += 1
+    status.save()
+    data = status_count(access_token, status_sha1)
+    return data
+
+# 分享成功
+def share_count_add(access_token, status_sha1):
+    user = user_with_access_token(access_token)
+    status = Status.objects.get(sha1=status_sha1)
+    status.share_count += 1
+    status.save()
+    return status_count(access_token, status_sha1)

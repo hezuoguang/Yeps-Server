@@ -8,15 +8,15 @@ class User(models.Model):
     #sha1 --- phone + time
     sha1 = models.CharField(max_length=40)
     # 用户名
-    username = models.CharField(max_length=255)
+    username = models.CharField(max_length=255, default="")
     # 手机号码
     phone = models.CharField(max_length=11, default="")
     # 密码
     pwd = models.CharField(max_length=32)
     # 昵称
-    nick = models.CharField(max_length=255)
+    nick = models.CharField(max_length=255, default="")
     # 邮箱
-    email = models.EmailField(null=True)
+    email = models.EmailField(null=True, default="")
     # 头像
     photo = models.URLField()
     # 年龄
