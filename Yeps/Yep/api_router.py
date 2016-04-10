@@ -156,6 +156,8 @@ class ManageApi:
                 raise ValueError
             content = params.get('content', '')
             result["data"]["vote"] = api_tools.join_vote(access_token, vote_sha1, vote_option_index, content)
+            if result["data"]["vote"].get("ret", None):
+                result = result["data"]["vote"]
         except Exception,e:
             result["ret"] = Status.REQUESTPARAMSERROR
             result["info"] = Status().getReason(result["ret"])

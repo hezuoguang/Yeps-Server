@@ -2,7 +2,7 @@
 
 import hashlib, datetime, json, pdb
 from Yep.models import *
-
+from Yep.response_status import Status as ReStatus
 from Yep import tools
 def check_phone(phone):
     user = User.objects.filter(phone=phone).first()
@@ -23,7 +23,7 @@ def get_user_basic_info(user_sha1):
     user = User.objects.get(sha1=user_sha1)
     user_info = dict(
         user_sha1 = user.sha1,
-        nike = user.nick,
+        nick = user.nick,
         photo = user.photo
     )
     return user_info
@@ -192,7 +192,19 @@ def status_to_dict(user, status, is_detail=False):
             if vote.end_time <= datetime.datetime.now():
                 vote.is_end = True
                 vote.save()
-        tmp["vote"] = {
+        tmp["vote"] = vote_to_dict(user.sha1,status_sha1=status.sha1)
+    return tmp
+
+# user_sha1 和 status_sha1/vote_sha1 获取投票详情
+def vote_to_dict(user_sha1, status_sha1=None, vote_sha1=None):
+    vote = None
+    if status_sha1:
+        vote = Vote.objects.filter(status_sha1=status_sha1).first()
+    elif vote_sha1:
+        vote = Vote.objects.filter(sha1=vote_sha1).first()
+    else:
+        raise ValueError
+    tmp = {
             'vote_sha1': vote.sha1,
             'vote_result': json.loads(vote.vote_result),
             'vote_option': json.loads(vote.vote_option),
@@ -200,12 +212,12 @@ def status_to_dict(user, status, is_detail=False):
             'end_time': tools.date_time_to_str(vote.end_time),
             'is_end': vote.is_end,
         }
-        record = VoteRecord.objects.filter(user_sha1=user.sha1, vote_sha1=vote.sha1).first()
-        if record:
-            tmp['vote']['me_is_vote'] = True
-            tmp['vote']['me_vote_option'] = record.vote_option_index
-        else:
-            tmp['vote']['me_is_vote'] = False
+    record = VoteRecord.objects.filter(user_sha1=user_sha1, vote_sha1=vote.sha1).first()
+    if record:
+        tmp['me_is_vote'] = True
+        tmp['me_vote_option'] = record.vote_option_index
+    else:
+        tmp['me_is_vote'] = False
     return tmp
 
 # 获取评论的详细信息
@@ -254,10 +266,30 @@ def status_count(access_token, status_sha1):
 # 用户参与投票
 def join_vote(access_token, vote_sha1, vote_option_index, content):
     vote = Vote.objects.get(sha1=vote_sha1)
-    if vote.is_end:
-        raise ValueError
     user = user_with_access_token(access_token)
-    if vote_option_index > len(json.loads(vote.vote_option)):
+    if vote.end_time < datetime.datetime.now():
+        vote.is_end = True
+        vote.save()
+    if vote.is_end:
+        tmp = {
+            "ret" : ReStatus.VOTEENDERRPOR,
+            "info": ReStatus().getReason(ReStatus.VOTEENDERRPOR),
+            "data": {
+                "vote": vote_to_dict(user.sha1, vote_sha1=vote_sha1)
+            }
+        }
+        return tmp
+    record = VoteRecord.objects.filter(user_sha1=user.sha1, vote_sha1=vote.sha1).first()
+    if record:
+        tmp = {
+            "ret" : ReStatus.VOTEREPEATERRPOR,
+            "info": ReStatus().getReason(ReStatus.VOTEREPEATERRPOR),
+            "data": {
+                "vote": vote_to_dict(user.sha1, vote_sha1=vote_sha1)
+            }
+        }
+        return tmp
+    if vote_option_index >= len(json.loads(vote.vote_option)):
         raise ValueError
     record = VoteRecord()
     record.vote_sha1 = vote.sha1
@@ -270,16 +302,7 @@ def join_vote(access_token, vote_sha1, vote_option_index, content):
     vote.vote_result = json.dumps(vote_result)
     vote.save()
     record.save()
-    tmp = {
-        'vote_sha1': vote.sha1,
-        'vote_result': json.loads(vote.vote_result),
-        'vote_option': json.loads(vote.vote_option),
-        'vote_count': vote.vote_count,
-        'end_time': vote.end_time,
-        'is_end': vote.is_end,
-        'me_is_vote': True,
-        'me_vote_option':vote_option_index
-    }
+    tmp = vote_to_dict(user.sha1, vote_sha1=vote_sha1)
     return tmp
 
 # 发布一条状态

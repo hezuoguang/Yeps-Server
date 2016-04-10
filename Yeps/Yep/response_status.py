@@ -8,6 +8,9 @@ admin_status = {
     '0002': '手机号已被注册',
     '0003': '手机号或密码错误',
 
+    '1001': '投票已结束',
+    '1002': '您已投过票',
+
 }
 
 class Status:
@@ -18,6 +21,9 @@ class Status:
     OK                                = '0001'
     PHONEEXISTS                       = '0002'
     PHONEORPWDERROR                   = '0003'
+
+    VOTEENDERRPOR                     = '1001'
+    VOTEREPEATERRPOR                  = '1002'
 
 
     def getReason(self, code):
