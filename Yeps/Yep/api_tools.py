@@ -5,6 +5,7 @@ import pdb
 from Yep.models import *
 from Yep import db_tools
 from Yep.response_status import Status
+from Yep.response_status import ZGError
 from Yep import system_tags, system_schools
 from Yep import tools, qiniu_tools
 
@@ -14,6 +15,21 @@ def init_response_result():
     result["info"] = Status().getReason(result["ret"])
     result["data"] = {}
     return result
+
+# 处理异常
+def dowith_error(error, result):
+    print(error)
+    if isinstance(error, ZGError):
+        result['ret'] = error.ret
+        result['info'] = error.info
+    else:
+        result['ret'] = Status.REQUESTPARAMSERROR
+        result['info'] = Status().getReason(result['ret'])
+    return result
+
+#获取当前用户
+def get_user_with_access_token(access_token):
+    return db_tools.user_with_access_token(access_token)
 
 # 获取系统用户标签列表
 def system_user_tag_list():
@@ -106,3 +122,35 @@ def click_like(access_token, status_sha1):
 # 分享成功
 def share_count_add(access_token, status_sha1):
     return db_tools.share_count_add(access_token, status_sha1)
+
+# 关注
+def follow(access_token, user_sha1):
+    return db_tools.follow(access_token, user_sha1)
+
+# 取消关注
+def remove_follow(access_token, user_sha1):
+    return db_tools.remove_follow(access_token, user_sha1)
+
+# 更新头像
+def update_photo(access_token, photo):
+    return db_tools.update_photo(access_token, photo)
+
+# 更新个人页面背景图片
+def update_profile_back(access_token, photo):
+    return db_tools.update_profile_back(access_token, photo)
+
+# 更新用户标签
+def update_tag_list(access_token, tag_list):
+    return db_tools.update_tag_list(access_token, tag_list)
+
+# 更新密码
+def update_pwd(access_token, old_pwd, new_pwd):
+    return db_tools.update_pwd(access_token, old_pwd, new_pwd)
+
+#更新用户简介
+def update_intro(access_token, intro):
+    return db_tools.update_intro(access_token, intro)
+
+#更新用户信息
+def update_info(access_token, nick, email, sex, birthday):
+    return db_tools.update_info(access_token, nick, email, sex, birthday)

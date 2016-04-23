@@ -1,8 +1,10 @@
 #coding:utf-8
 
 import hashlib, datetime, json, pdb
+from django.db import transaction
 from Yep.models import *
 from Yep.response_status import Status as ReStatus
+from Yep.response_status import ZGError
 from Yep import tools
 def check_phone(phone):
     user = User.objects.filter(phone=phone).first()
@@ -45,26 +47,40 @@ def check_login(phone, pwd):
 #获取用户所有信息
 def get_user_full_info(user_sha1):
     user = User.objects.get(sha1=user_sha1)
+    # "follow_count" : "关注数",
+    # "fans_count" : "粉丝数",
+    # "status_count" : "状态数",
+    status_count = Status.objects.filter(user_sha1=user_sha1).count()
+    fans_count = Follow.objects.filter(other_user_sha1=user_sha1).count()
+    follow_count = Follow.objects.filter(user_sha1=user_sha1).count()
+    age = datetime.datetime.now().year - user.birthday.year
+    if age < 0:
+        age = 0
     user_info = dict(
         user_sha1 = user.sha1,
         nick = user.nick,
         phone = user.phone,
         photo = user.photo,
         email = user.email,
-        age = user.age,
+        age = age,
         sex = user.sex,
-        introl = user.intro,
-        birthday = tools.date_time_to_str(user.birthday),
+        intro = user.intro,
+        birthday = user.birthday.strftime("%Y-%m-%d"),
         university = user.university,
         active_university = user.active_university,
         tag_list = json.loads(user.tag_list),
         create_time = tools.date_time_to_str(user.create_time),
         last_active_time = tools.date_time_to_str(user.last_active_time),
-        access_token = user.access_token
+        access_token = user.access_token,
+        status_count = status_count,
+        fans_count = fans_count,
+        follow_count =follow_count,
+        image_list = json.loads(user.image_list)
     )
     return user_info
 
 # 创建一个用户
+@transaction.commit_on_success()
 def create_user(nick, phone, pwd, photo, sex, tag_list, university):
     now = datetime.datetime.now()
     sha1 = tools.sha1_with_args(phone, str(now))
@@ -387,3 +403,84 @@ def share_count_add(access_token, status_sha1):
     status.share_count += 1
     status.save()
     return status_count(access_token, status_sha1)
+
+# 关注
+def follow(access_token, user_sha1):
+    user = user_with_access_token(access_token)
+    if user.sha1 == user_sha1:
+        raise ValueError
+    other_user = User.objects.get(sha1=user_sha1)
+    followShip = Follow.objects.get(user_sha1=user.sha1, other_user_sha1=other_user.sha1)
+    if followShip:
+        return {}
+    followShip = Follow()
+    followShip.user_sha1 = user.sha1
+    followShip.other_user_sha1 = other_user.sha1
+    followShip.save()
+    return {}
+
+# 取消关注
+def remove_follow(access_token, user_sha1):
+    user = user_with_access_token(access_token)
+    if user.sha1 == user_sha1:
+        raise ValueError
+    other_user = User.objects.get(sha1=user_sha1)
+    Follow.objects.filter(user_sha1=user.sha1, other_user_sha1=other_user.sha1).delete()
+    return {}
+
+# 更新头像
+def update_photo(access_token, photo):
+    user = user_with_access_token(access_token)
+    user.photo = photo
+    user.save()
+    # return get_user_full_info(user.sha1)
+    return {}
+
+# 更新个人页面背景图片
+def update_profile_back(access_token, photo):
+    user = user_with_access_token(access_token)
+    image_list = json.loads(user.image_list)
+    if len(image_list) == 0:
+        image_list.append(photo)
+    else:
+        image_list[0] = photo
+    user.image_list = json.dumps(image_list)
+    user.save()
+    # return get_user_full_info(user.sha1)
+    return {}
+
+# 更新用户标签
+def update_tag_list(access_token, tag_list):
+    user = user_with_access_token(access_token)
+    user.tag_list = json.dumps(tag_list)
+    user.save()
+    return get_user_full_info(user.sha1)
+
+# 更新密码
+def update_pwd(access_token, old_pwd, new_pwd):
+    user = user_with_access_token(access_token)
+    old_pwd = tools.md5_pwd(old_pwd)
+    if old_pwd != user.pwd:
+        raise ZGError(ReStatus.OLDPWDERROR)
+    new_pwd = tools.md5_pwd(new_pwd)
+    user.pwd = new_pwd
+    user.access_token = tools.init_access_token(user.sha1, new_pwd)
+    user.save()
+    return {}
+
+#更新用户简介
+def update_intro(access_token, intro):
+    user = user_with_access_token(access_token)
+    user.intro = intro
+    user.save()
+    return {}
+
+#更新用户信息
+def update_info(access_token, nick, email, sex, birthday):
+    user = user_with_access_token(access_token)
+    user.nick = nick
+    user.email = email
+    user.sex = sex
+    user.birthday = birthday
+    user.save()
+    return get_user_full_info(user.sha1)

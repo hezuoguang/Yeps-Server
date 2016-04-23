@@ -3,6 +3,30 @@ from django.db import models
 
 # Create your models here.
 
+class EmojiTextField(models.TextField):
+    __metaclass__ = models.SubfieldBase
+
+    def to_python(self, value):
+        if not value:
+            return value
+        try:
+            return value.decode('base64').decode('bz2').decode('utf-8')
+        except Exception:
+            return value
+
+    def get_prep_value(self, value):
+        if not value:
+            return value
+        try:
+            value.decode('base64')
+            return value
+        except Exception:
+            try:
+                tmp = value.encode('utf-8').encode('bz2').encode('base64')
+                return tmp
+            except Exception:
+                return value
+
 #用户模型
 class User(models.Model):
     #sha1 --- phone + time
@@ -14,7 +38,7 @@ class User(models.Model):
     # 密码
     pwd = models.CharField(max_length=32)
     # 昵称
-    nick = models.CharField(max_length=255, default="")
+    nick = EmojiTextField(default="")
     # 邮箱
     email = models.EmailField(null=True, default="")
     # 头像
@@ -24,7 +48,7 @@ class User(models.Model):
     # 性别
     sex = models.CharField(max_length = 4, default = "男")
     # 简介
-    intro = models.CharField(max_length=255, default="一句话介绍自己^_^")
+    intro = EmojiTextField(default="一句话介绍自己^_^")
     # 生日
     birthday = models.DateTimeField(auto_now_add = True)
     # 大学
@@ -38,7 +62,7 @@ class User(models.Model):
     # 标签[]
     tag_list = models.TextField(default="[]")
     # 相册[]
-    # image_list = models.TextField(default="[]")
+    image_list = models.TextField(default="[]")
     # 授权码
     access_token = models.CharField(max_length=32)
 
@@ -58,9 +82,9 @@ class Status(models.Model):
     #创建者 user sha1
     user_sha1 = models.CharField(max_length=40)
     # 状态标题
-    title = models.CharField(max_length=255)
+    title = EmojiTextField(default="")
     # 状态内容
-    content = models.TextField()
+    content = EmojiTextField(default="")
     # 图片链接 [iamge_url1,image_url2...]
     image_list = models.TextField(blank = True)
     #类型 0:微交流(讨论) 1:微评选(投票) 2:随手拍 3:一起玩 4:发现 5:二手
@@ -102,7 +126,7 @@ class VoteRecord(models.Model):
     # 所投选项
     vote_option_index = models.SmallIntegerField()
     # 附件说明
-    content = models.CharField(max_length=255,default="")
+    content = EmojiTextField(default="")
     # 投票时间
     create_time = models.DateTimeField(auto_now_add=True)
 
@@ -119,7 +143,7 @@ class Comment(models.Model):
     status_sha1 = models.CharField(max_length=40)
     user_sha1 = models.CharField(max_length=40)
     # 评论内容
-    content = models.CharField(max_length=1024)
+    content = EmojiTextField(default="")
     # 创建时间
     create_time = models.DateTimeField(auto_now_add=True)
     # 是否为子评论
@@ -144,7 +168,7 @@ class Message(models.Model):
     # 消息产生者
     other_sha1 = models.CharField(max_length=40)
     # 消息内容
-    content = models.CharField(max_length=255)
+    content = EmojiTextField(default="")
     # 消息状态 0 未读, 1 已读, 2 删除
     status = models.IntegerField(default=0)
     create_time = models.DateTimeField(auto_now_add=True)

@@ -184,6 +184,9 @@ var api_data = [
                 "tag_list":"标签列表[Python, IOS...](字符串)",
                 "create_time":"注册时间(2016-02-27 18:25:30)",
                 "last_active_time":"最后活动时间(2016-02-27 18:25:30)",
+                "follow_count" : "关注数",
+                "fans_count" : "粉丝数",
+                "status_count" : "状态数",
                 "access_token":"授权码",
             }
         },
@@ -225,6 +228,9 @@ var api_data = [
                 "tag_list":"标签列表[Python, IOS...]",
                 "create_time":"注册时间(2016-02-27 18:25:30)",
                 "last_active_time":"最后活动时间(2016-02-27 18:25:30)",
+                "follow_count" : "关注数",
+                "fans_count" : "粉丝数",
+                "status_count" : "状态数",
                 "access_token":"授权码",
             }
         },
@@ -830,6 +836,33 @@ var api_data = [
         }
     },
 
+    // 更新个人页面背景图片
+    {
+        "name": "更新个人页面背景图片",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "update_profile_back",
+            "data": {
+                "access_token":"授权码",
+                "photo":"图片url",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
     // 更新用户标签
     {
         "name": "更新用户标签",
@@ -922,18 +955,16 @@ var api_data = [
             "data": {
                 "access_token":"授权码",
                 "nick":"昵称",
-                "photo":"头像url",
                 "email":"邮箱",
-                "age":"年(22)",
                 "sex":"性别(0/1)",
                 "birthday":"生日(1999-12-23)",
-                "city":"城市",
             },
         },
         "response": {
             "info": "OK",
             "ret": "0001",
             'data':{
+                "个人详细信息":""
             }
         },
         "note": {
@@ -1027,7 +1058,7 @@ var api_data = [
             "action": "search_user_list",
             "data": {
                 "access_token":"授权码",
-                "max_id":"获取follow_id < max_id的最新数据,可选,默认返回最新",
+                "max_id":"获取user_id < max_id的最新数据,可选,默认返回最新",
                 "count":"可选,最大不超过50,默认返回20条",
                 "key":"搜索关键字(匹配nick)",
             },
@@ -1085,6 +1116,9 @@ var api_data = [
                 "create_time":"注册时间(2016-02-27 18:25:30)",
                 "last_active_time":"最后活动时间(2016-02-27 18:25:30)",
                 "is_follow":"我是否关注了他(0:未关注, 1:关注了)",
+                "follow_count" : "关注数",
+                "fans_count" : "粉丝数",
+                "status_count" : "状态数",
             }
         },
         "note": {
@@ -1125,6 +1159,9 @@ var api_data = [
                 "tag_list":"标签列表[Python, IOS...](字符串)",
                 "create_time":"注册时间(2016-02-27 18:25:30)",
                 "last_active_time":"最后活动时间(2016-02-27 18:25:30)",
+                "follow_count" : "关注数",
+                "fans_count" : "粉丝数",
+                "status_count" : "状态数",
             }
         },
         "note": {

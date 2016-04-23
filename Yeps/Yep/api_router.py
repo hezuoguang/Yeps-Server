@@ -33,8 +33,7 @@ class ManageApi:
             pic_name = params['pic_name']
             result = api_tools.qiniu_token(pic_name)
         except Exception,e:
-            result["ret"] = Status.REQUESTPARAMSERROR
-            result["info"] = Status().getReason(result["ret"])
+            result = api_tools.dowith_error(e, result)
             return result
         return result
 
@@ -45,8 +44,7 @@ class ManageApi:
             phone = params['phone']
             result = api_tools.check_phone(phone)
         except Exception,e:
-            result["ret"] = Status.REQUESTPARAMSERROR
-            result["info"] = Status().getReason(result["ret"])
+            result = api_tools.dowith_error(e, result)
             return result
         return result
 
@@ -61,14 +59,17 @@ class ManageApi:
             sex = int(params['sex'])
             if sex < 0 or sex > 1:
                 sex = 0
+            if sex == 0:
+                sex = "男"
+            else:
+                sex = "女"
             tag_list = params['tag_list']
             university = params['university']
             if not tools.check_user_tag(tag_list) or not tools.check_school(university):
                 raise ValueError
             result = api_tools.register(nick, phone, pwd, photo, sex, tag_list, university)
         except Exception,e:
-            result["ret"] = Status.REQUESTPARAMSERROR
-            result["info"] = Status().getReason(result["ret"])
+            result = api_tools.dowith_error(e, result)
             return result
         return result
 
@@ -80,8 +81,7 @@ class ManageApi:
             pwd = params['pwd']
             result = api_tools.login(phone, pwd)
         except Exception,e:
-            result["ret"] = Status.REQUESTPARAMSERROR
-            result["info"] = Status().getReason(result["ret"])
+            result = api_tools.dowith_error(e, result)
             return result
         return result
 
@@ -95,8 +95,7 @@ class ManageApi:
                 raise ValueError
             result = api_tools.switch_active_university(access_token, university)
         except Exception,e:
-            result["ret"] = Status.REQUESTPARAMSERROR
-            result["info"] = Status().getReason(result["ret"])
+            result = api_tools.dowith_error(e, result)
             return result
         return result
 
@@ -113,8 +112,7 @@ class ManageApi:
             result["data"]['status_list'] = api_tools.status_list(access_token, since_id, max_id, type, count, is_follow)
         except Exception,e:
             print(e)
-            result["ret"] = Status.REQUESTPARAMSERROR
-            result["info"] = Status().getReason(result["ret"])
+            result = api_tools.dowith_error(e, result)
             return result
         return result
 
@@ -127,8 +125,7 @@ class ManageApi:
             max_id = params.get("max_id", -1)
             result["data"]['comment_list'] = api_tools.comment_list(access_token, status_sha1, max_id)
         except Exception,e:
-            result["ret"] = Status.REQUESTPARAMSERROR
-            result["info"] = Status().getReason(result["ret"])
+            result = api_tools.dowith_error(e, result)
             return result
         return result
 
@@ -140,8 +137,7 @@ class ManageApi:
             status_sha1 = params['status_sha1']
             result["data"] = api_tools.status_count(access_token, status_sha1)
         except Exception,e:
-            result["ret"] = Status.REQUESTPARAMSERROR
-            result["info"] = Status().getReason(result["ret"])
+            result = api_tools.dowith_error(e, result)
             return result
         return result
 
@@ -159,8 +155,7 @@ class ManageApi:
             if result["data"]["vote"].get("ret", None):
                 result = result["data"]["vote"]
         except Exception,e:
-            result["ret"] = Status.REQUESTPARAMSERROR
-            result["info"] = Status().getReason(result["ret"])
+            result = api_tools.dowith_error(e, result)
             return result
         return result
 
@@ -184,8 +179,7 @@ class ManageApi:
                 end_time = 3
             result["data"] = api_tools.publish_status(access_token, title, content, image_list, type, vote_option, end_time)
         except Exception,e:
-            result["ret"] = Status.REQUESTPARAMSERROR
-            result["info"] = Status().getReason(result["ret"])
+            result = api_tools.dowith_error(e, result)
             return result
         return result
 
@@ -199,8 +193,7 @@ class ManageApi:
             comment_sha1 = params.get('comment_sha1', None)
             result["data"] = api_tools.publish_comment(access_token, content, status_sha1, comment_sha1)
         except Exception,e:
-            result["ret"] = Status.REQUESTPARAMSERROR
-            result["info"] = Status().getReason(result["ret"])
+            result = api_tools.dowith_error(e, result)
             return result
         return result
 
@@ -212,8 +205,7 @@ class ManageApi:
             status_sha1 = params['status_sha1']
             result["data"] = api_tools.click_like(access_token, status_sha1)
         except Exception,e:
-            result["ret"] = Status.REQUESTPARAMSERROR
-            result["info"] = Status().getReason(result["ret"])
+            result = api_tools.dowith_error(e, result)
             return result
         return result
 
@@ -225,8 +217,7 @@ class ManageApi:
             status_sha1 = params['status_sha1']
             result["data"] = api_tools.share_count_add(access_token, status_sha1)
         except Exception,e:
-            result["ret"] = Status.REQUESTPARAMSERROR
-            result["info"] = Status().getReason(result["ret"])
+            result = api_tools.dowith_error(e, result)
             return result
         return result
 
@@ -243,36 +234,109 @@ class ManageApi:
     # 关注
     def follow(self, request, params):
         result = init_response_result()
+        try:
+            access_token = params['access_token']
+            user_sha1 = params['user_sha1']
+            result["data"] = api_tools.follow(access_token, user_sha1)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
         return result
 
     # 取消关注
     def remove_follow(self, request, params):
         result = init_response_result()
+        try:
+            access_token = params['access_token']
+            user_sha1 = params['user_sha1']
+            result["data"] = api_tools.remove_follow(access_token, user_sha1)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
         return result
 
     # 更新头像
     def update_photo(self, request, params):
         result = init_response_result()
+        try:
+            access_token = params['access_token']
+            photo = params['photo']
+            result["data"] = api_tools.update_photo(access_token, photo)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
+        return result
+
+    # 更新个人页面背景图片
+    def update_profile_back(self, request, params):
+        result = init_response_result()
+        try:
+            access_token = params['access_token']
+            photo = params['photo']
+            result["data"] = api_tools.update_profile_back(access_token, photo)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
         return result
 
     # 更新用户标签
     def update_tag_list(self, request, params):
         result = init_response_result()
+        try:
+            access_token = params['access_token']
+            tag_list = params['tag_list']
+            if not tools.check_user_tag(tag_list):
+                raise ValueError
+            result["data"] = api_tools.update_tag_list(access_token, tag_list)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
         return result
 
     # 更新用户密码
     def update_pwd(self, request, params):
         result = init_response_result()
+        try:
+            access_token = params['access_token']
+            old_pwd = params['old_pwd']
+            new_pwd = params['new_pwd']
+            result["data"] = api_tools.update_pwd(access_token, old_pwd, new_pwd)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
         return result
 
     # 更新用户简介
     def update_intro(self, request, params):
         result = init_response_result()
+        try:
+            access_token = params['access_token']
+            intro = params['intro']
+            result["data"] = api_tools.update_intro(access_token, intro)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
         return result
 
     # 更新用户资料
     def update_info(self, request, params):
         result = init_response_result()
+        try:
+            access_token = params['access_token']
+            nick = params['nick']
+            email = params['email']
+            birthday = params['birthday']
+            sex = int(params['sex'])
+            if sex < 0 or sex > 1:
+                sex = 0
+            if sex == 0:
+                sex = "男"
+            else:
+                sex = "女"
+            result["data"] = api_tools.update_info(access_token, nick, email, sex, birthday)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
         return result
 
     # 获取用户关注列表
@@ -323,6 +387,14 @@ def api_router(request):
         if request.method == 'POST':
             func_name = request.POST["action"]
             params = json.loads(request.POST["data"]) if request.POST.has_key("data") else {}
+            access_token = params.get('access_token', None)
+            if access_token:
+                user = api_tools.get_user_with_access_token(access_token)
+                if not user:
+                    result['ret'] = Status.ACCESSTOKENERROR
+                    result['info'] = Status().getReason(result['ret'])
+                    result['data'] = {}
+                    return HttpResponse(json.dumps(result))
             result = getattr(manage_api, func_name, None)(request, params)
         elif request.method == 'GET':
             func_name = request.GET["action"]
