@@ -351,6 +351,86 @@ var api_data = [
         }
     },
 
+    //获取某个用户status_list
+    {
+        "name": "获取某个用户status_list",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "user_status_list",
+            "data": {
+                "access_token":"授权码",
+                "user_sha1":"",
+                "since_id":"status_id(获取status_id > since_id的数据,可选,不选则获取最新的)",
+                "max_id":"status_id(获取status_id < max_id的最新数据,可选,若此参数填写,则since_id无效)",
+                "count":"单页返回的记录条数，最大不超过50，默认为20",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+                "status_list":[
+                    {
+                        "create_user":{
+                            "user_sha1":"user_sha1",
+                            "nick":"昵称",
+                            "photo":"头像url",
+                        },
+                        "status_id":"",
+                        "status_sha1":"Status_sha1",
+                        "title":"标题",
+                        "content":"详细内容",
+                        "image_list":"图片url_list[http://XXX.com/XXX.png,...]",
+                        "type":"类型 0:微交流(讨论) 1:微评选(投票) 2:随手拍 3:一起玩 4:发现 5:二手",
+                        "create_time":"创建时间(2016-02-27 18:21:34)",
+                        "like_count":"点赞数",
+                        "share_count":"分享数",
+                        "comment_conut":"评论数",
+                        "university":"大学",
+                        "me_is_like":"我是否点过赞",
+                    },
+                    {
+                        "create_user":{
+                            "user_sha1":"user_sha1",
+                            "nick":"昵称",
+                            "photo":"头像url",
+                        },
+                        "status_id":"",
+                        "status_sha1":"Status_sha1",
+                        "title":"标题",
+                        "content":"详细内容",
+                        "image_list":"图片url_list[http://XXX.com/XXX.png,...]",
+                        "type":"1:微评选",
+                        "create_time":"创建时间(2016-02-27 18:21:34)",
+                        "like_count":"点赞数",
+                        "share_count":"分享数",
+                        "comment_conut":"评论数",
+                        "university":"大学",
+                        "me_is_like":"我是否点过赞",
+                        "vote":{
+                            "vote_sha1":"",
+                            "vote_option":"选项列表[选项1, 选项二]",
+                            "vote_result":"选项对应的票数[1,10]",
+                            "vote_count":"当前总票数",
+                            "me_is_vote":"我是否参与了投票(0:未参与, 1:参与了)",
+                            "me_vote_option":"我投的选项下标",
+                            "end_time":"结束时间",
+                            "is_end":"是否已经结束(0:未结束, 1:已结束)",
+                        }
+                    }
+                ],
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
     //获取Status 详情
     {
         "name": "获取Status详情",
@@ -1022,7 +1102,7 @@ var api_data = [
             "action": "recommend_user_list",
             "data": {
                 "access_token":"授权码",
-                "max_id":"获取follow_id < max_id的最新数据,可选,默认返回最新",
+                "max_id":"获取recommend_id < max_id的最新数据,可选,默认返回最新",
                 "count":"可选,最大不超过50,默认返回20条",
             },
         },
@@ -1032,7 +1112,7 @@ var api_data = [
             'data':{
                 "user_list":[
                     {
-                        "follow_id":"",
+                        "recommend_id":"",
                         "user_sha1":"user_sha1",
                         "nick":"昵称",
                         "photo":"头像url",
@@ -1252,6 +1332,69 @@ var api_data = [
             "data": {
                 "access_token":"授权码",
                 "message_sha1":"",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 获取用户状态照片列表
+    {
+        "name": "获取用户状态照片列表",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "status_image_list",
+            "data": {
+                "access_token":"授权码",
+                "user_sha1":"",
+                "max_id":"",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+                'image_list' : [
+                    {
+                        'image_id' : '',
+                        'image_url' : '',
+                        'status_sha1' : '',
+                    }
+                ]
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
+    // 匹配操作
+    {
+        "name": "匹配操作",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "match_option",
+            "data": {
+                "access_token":"授权码",
+                "user_sha1":"",
+                "is_match":"是否喜欢 0 不喜欢 1 喜欢",
             },
         },
         "response": {

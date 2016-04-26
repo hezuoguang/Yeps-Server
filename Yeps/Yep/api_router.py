@@ -116,6 +116,35 @@ class ManageApi:
             return result
         return result
 
+    # 获取某个用户status_list
+    def user_status_list(self, request, params):
+        result = init_response_result()
+        try:
+            access_token = params['access_token']
+            since_id = params.get("since_id", -1)
+            max_id = params.get("max_id", -1)
+            user_sha1 = params['user_sha1']
+            count = params.get('count', 20)
+            result["data"]['status_list'] = api_tools.user_status_list(access_token,user_sha1, since_id, max_id, count)
+        except Exception,e:
+            print(e)
+            result = api_tools.dowith_error(e, result)
+            return result
+        return result
+
+    # 获取Status 详情
+    def status_detail(self, request, params):
+        result = init_response_result()
+        try:
+            access_token = params['access_token']
+            status_sha1 = params['status_sha1']
+            result["data"] = api_tools.status_detail(access_token, status_sha1)
+        except Exception,e:
+            print(e)
+            result = api_tools.dowith_error(e, result)
+            return result
+        return result
+
     # 获取评论列表
     def comment_list(self, request, params):
         result = init_response_result()
@@ -347,6 +376,14 @@ class ManageApi:
     # 获取系统推荐用户列表
     def recommend_user_list(self, request, params):
         result = init_response_result()
+        try:
+            access_token = params['access_token']
+            max_id = int(params.get('max_id', -1))
+            count = int(params.get('count', 20))
+            result["data"]["user_list"] = api_tools.recommend_user_list(access_token, max_id, count)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
         return result
 
     # 搜索用户
@@ -357,11 +394,24 @@ class ManageApi:
     # 获取其他用户资料
     def get_other_user_info(self, request, params):
         result = init_response_result()
+        try:
+            access_token = params['access_token']
+            user_sha1 = params['user_sha1']
+            result["data"] = api_tools.get_other_user_info(access_token, user_sha1)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
         return result
 
     # 获取自己资料
     def get_user_info(self, request, params):
         result = init_response_result()
+        try:
+            access_token = params['access_token']
+            result["data"] = api_tools.get_user_info(access_token)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
         return result
 
     # 获取消息列表
@@ -377,6 +427,32 @@ class ManageApi:
     # 删除消息
     def delete_message(self, request, params):
         result = init_response_result()
+        return result
+
+    # 获取用户状态照片列表
+    def status_image_list(self, request, params):
+        result = init_response_result()
+        try:
+            access_token = params['access_token']
+            user_sha1 = params['user_sha1']
+            max_id = int(params.get('max_id', -1))
+            result["data"]['image_list'] = api_tools.status_image_list(access_token, user_sha1, max_id)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
+        return result
+
+    # 匹配操作
+    def match_option(self, request, params):
+        result = init_response_result()
+        try:
+            access_token = params['access_token']
+            user_sha1 = params['user_sha1']
+            is_match = params['is_match']
+            result["data"] = api_tools.match_option(access_token, user_sha1, is_match)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
         return result
 
 manage_api = ManageApi()
@@ -395,6 +471,9 @@ def api_router(request):
                     result['info'] = Status().getReason(result['ret'])
                     result['data'] = {}
                     return HttpResponse(json.dumps(result))
+                else:
+                    user.last_active_time = datetime.datetime.now()
+                    user.save()
             result = getattr(manage_api, func_name, None)(request, params)
         elif request.method == 'GET':
             func_name = request.GET["action"]

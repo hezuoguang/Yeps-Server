@@ -36,6 +36,21 @@ def get_user_info(user_sha1):
     user_info.pop("access_token")
     return user_info
 
+#获取其他用户资料
+def get_other_info(access_token, other_user_sha1):
+    user = user_with_access_token(access_token)
+    return get_other_info_with_user_sha1(user.sha1, other_user_sha1)
+
+#获取其他用户资料
+def get_other_info_with_user_sha1(user_sha1, other_user_sha1):
+    other_user_info = get_user_info(other_user_sha1)
+    followR = Follow.objects.filter(user_sha1=user_sha1, other_user_sha1=other_user_sha1)
+    if followR:
+        other_user_info['is_follow'] = 1
+    else:
+        other_user_info['is_follow'] = 0
+    return other_user_info
+
 # 检测用户登录, 成功返回用户信息 失败返回False
 def check_login(phone, pwd):
     try:
@@ -53,6 +68,7 @@ def get_user_full_info(user_sha1):
     status_count = Status.objects.filter(user_sha1=user_sha1).count()
     fans_count = Follow.objects.filter(other_user_sha1=user_sha1).count()
     follow_count = Follow.objects.filter(user_sha1=user_sha1).count()
+    status_image_count = UserImage.objects.filter(user_sha1=user_sha1).count()
     age = datetime.datetime.now().year - user.birthday.year
     if age < 0:
         age = 0
@@ -75,7 +91,8 @@ def get_user_full_info(user_sha1):
         status_count = status_count,
         fans_count = fans_count,
         follow_count =follow_count,
-        image_list = json.loads(user.image_list)
+        image_list = json.loads(user.image_list),
+        status_image_count = status_image_count
     )
     return user_info
 
@@ -139,10 +156,10 @@ def get_new_status_list(access_token, sinace_id, type, count, is_follow):
     if is_follow != 0:
         sha1_list = get_follow_list(user.sha1)
         if sinace_id != -1:
-            statuses = Status.objects.filter(id__gt=sinace_id,status=0,university=user.active_university).filter(user_sha1__in=sha1_list).order_by("id")[0:count]
+            statuses = Status.objects.filter(id__gt=sinace_id,status=0).filter(user_sha1__in=sha1_list).order_by("id")[0:count]
             statuses = sorted(statuses, key=lambda s1:-s1.id)[0 : count]
         else:
-            statuses = Status.objects.filter(status=0,university=user.active_university).filter(user_sha1__in=sha1_list).order_by("-id")[0:count]
+            statuses = Status.objects.filter(status=0).filter(user_sha1__in=sha1_list).order_by("-id")[0:count]
     else:
         if sinace_id != -1:
             statuses = Status.objects.filter(id__gt=sinace_id, type=type, status=0,university=user.active_university).order_by("id")[0:count]
@@ -160,9 +177,34 @@ def get_old_status_list(access_token, max_id, type, count, is_follow):
     user = user_with_access_token(access_token)
     if is_follow != 0:
         sha1_list = get_follow_list(user.sha1)
-        statuses = Status.objects.filter(id__lt=max_id, type=type, status=0,university=user.active_university).filter(user_sha1__in=sha1_list).order_by("-id")[0:count]
+        statuses = Status.objects.filter(id__lt=max_id, type=type, status=0).filter(user_sha1__in=sha1_list).order_by("-id")[0:count]
     else:
         statuses = Status.objects.filter(id__lt=max_id, type=type, status=0,university=user.active_university).order_by("-id")[0:count]
+    status_list = []
+    for status in statuses:
+        tmp = status_to_dict(user, status)
+        status_list.append(tmp)
+    return status_list
+
+# 获取id 大于sinace_id的status数据
+def get_new_user_status_list(access_token, user_sha1, sinace_id, count):
+    # user = user_with_access_token(access_token)
+    user = User.objects.get(sha1=user_sha1)
+    if sinace_id != -1:
+        statuses = Status.objects.filter(id__gt=sinace_id, status=0, user_sha1=user_sha1).order_by("id")[0:count]
+        statuses = sorted(statuses, key=lambda s1:-s1.id)[0 : count]
+    else:
+        statuses = Status.objects.filter(status=0, user_sha1=user_sha1).order_by("-id")[0:count]
+    status_list = []
+    for status in statuses:
+        tmp = status_to_dict(user, status)
+        status_list.append(tmp)
+    return status_list
+
+# 获取id 小于max_id的status数据
+def get_old_user_status_list(access_token,user_sha1, max_id, count):
+    user = user_with_access_token(access_token)
+    statuses = Status.objects.filter(id__lt=max_id, status=0, user_sha1=user_sha1).order_by("-id")[0:count]
     status_list = []
     for status in statuses:
         tmp = status_to_dict(user, status)
@@ -250,6 +292,11 @@ def comment_to_dict(comment):
         other_comment = Comment.objects.get(sha1=comment.comment_sha1)
         tmp['other_user'] = get_user_basic_info(other_comment.user_sha1)
     return tmp
+#获取status详情
+def status_detail(access_token, status_sha1):
+    user = user_with_access_token(access_token)
+    status = Status.objects.get(sha1=status_sha1)
+    return status_to_dict(user, status,True)
 
 # 获取评论列表
 def comment_list(access_token, status_sha1, max_id):
@@ -350,6 +397,13 @@ def publish_status(access_token, title, content, image_list, type, vote_option=[
         vote.vote_result = json.dumps(vote_result)
         vote.save()
     status.save()
+    for image_url in image_list:
+        userImage = UserImage()
+        userImage.user_sha1 = user.sha1
+        userImage.status_sha1 = status.sha1
+        userImage.image_url = image_url
+        userImage.save()
+
     return status_to_dict(user, status)
 
 # 发布一条评论
@@ -410,7 +464,7 @@ def follow(access_token, user_sha1):
     if user.sha1 == user_sha1:
         raise ValueError
     other_user = User.objects.get(sha1=user_sha1)
-    followShip = Follow.objects.get(user_sha1=user.sha1, other_user_sha1=other_user.sha1)
+    followShip = Follow.objects.filter(user_sha1=user.sha1, other_user_sha1=other_user.sha1).first()
     if followShip:
         return {}
     followShip = Follow()
@@ -454,7 +508,7 @@ def update_tag_list(access_token, tag_list):
     user = user_with_access_token(access_token)
     user.tag_list = json.dumps(tag_list)
     user.save()
-    return get_user_full_info(user.sha1)
+    return get_user_info(user.sha1)
 
 # 更新密码
 def update_pwd(access_token, old_pwd, new_pwd):
@@ -473,7 +527,7 @@ def update_intro(access_token, intro):
     user = user_with_access_token(access_token)
     user.intro = intro
     user.save()
-    return {}
+    return get_user_info(user.sha1)
 
 #更新用户信息
 def update_info(access_token, nick, email, sex, birthday):
@@ -483,4 +537,86 @@ def update_info(access_token, nick, email, sex, birthday):
     user.sex = sex
     user.birthday = birthday
     user.save()
-    return get_user_full_info(user.sha1)
+    return get_user_info(user.sha1)
+
+# 获取自己资料
+def get_self_info(access_token):
+    user = user_with_access_token(access_token)
+    return get_user_info(user.sha1)
+
+#获取其他用信息
+def get_other_user_info(access_token, user_sha1):
+    return get_other_info(access_token, user_sha1)
+
+# 获取用户状态照片列表
+def status_image_list(access_token, user_sha1, max_id):
+    user = User.objects.get(sha1=user_sha1)
+    if max_id != -1:
+        userImages = UserImage.objects.filter(id__lt=max_id, user_sha1=user.sha1).order_by("-id")[0:30]
+    else:
+        userImages = UserImage.objects.filter(user_sha1=user.sha1).order_by("-id")[0:30]
+    image_list = []
+    for userImage in userImages:
+        tmp = {}
+        tmp['status_sha1'] = userImage.status_sha1
+        tmp['image_id'] = userImage.id
+        tmp['image_url'] = userImage.image_url
+        image_list.append(tmp)
+    return image_list
+
+#匹配过的user_sha1_list
+def match_after_user_list(user_sha1):
+    matchs = Match.objects.filter(user_sha1=user_sha1)
+    sha1_list = []
+    sha1_list.append(user_sha1)
+    for match in matchs:
+        sha1_list.append(match.other_user_sha1)
+    return sha1_list
+
+# 获取系统推荐用户列表
+def recommend_user_list(access_token, max_id, count):
+    user = user_with_access_token(access_token)
+    sha1_list = match_after_user_list(user.sha1)
+    sex = user.sex
+    if max_id == -1:
+        users = User.objects.all().exclude(sex=sex).exclude(sha1__in=sha1_list).order_by("-id")[0:count]
+    else:
+        users = User.objects.filter(id__lt=max_id).exclude(sex=sex).exclude(sha1__in=sha1_list,sex=sex).order_by("-id")[0:count]
+    user_list = []
+    for u in users:
+        info = get_other_info_with_user_sha1(user.sha1, u.sha1)
+        info['recommend_id'] = u.id
+        user_list.append(info)
+    return user_list
+
+# 创建消息
+def create_message(user_sha1, other_user_sha1, content):
+    now = datetime.datetime.now()
+    sha1 = tools.sha1_with_args(user_sha1, other_user_sha1, str(now))
+    message = Message()
+    message.sha1 = sha1
+    message.user_sha1 = user_sha1
+    message.other_sha1 = other_user_sha1
+    message.content = content
+    message.save()
+
+# 匹配操作
+def match_option(access_token, user_sha1, is_match):
+    other_user = User.objects.get(sha1=user_sha1)
+    user = user_with_access_token(access_token)
+    match = Match.objects.filter(user_sha1=user.sha1, other_user_sha1=other_user.sha1).first()
+    if match:
+        return {}
+    if is_match != 0:
+        is_match = 1
+    match = Match()
+    match.user_sha1 = user.sha1
+    match.other_user_sha1 = other_user.sha1
+    match.option = is_match
+    match.save()
+    success = Match.objects.filter(user_sha1=other_user.sha1, other_user_sha1=user.sha1, option=1).first()
+    if success:
+        content = '匹配成功'
+        create_message(user.sha1, other_user.sha1, content)
+        create_message(other_user.sha1, user.sha1, content)
+    return {}

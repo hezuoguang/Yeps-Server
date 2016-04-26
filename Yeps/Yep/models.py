@@ -44,11 +44,11 @@ class User(models.Model):
     # 头像
     photo = models.URLField()
     # 年龄
-    age = models.PositiveSmallIntegerField(default = 18)
+    # age = models.PositiveSmallIntegerField(default = 18)
     # 性别
     sex = models.CharField(max_length = 4, default = "男")
     # 简介
-    intro = EmojiTextField(default="一句话介绍自己^_^")
+    intro = EmojiTextField(default="Yeps 分享校园生活^_^")
     # 生日
     birthday = models.DateTimeField(auto_now_add = True)
     # 大学
@@ -181,4 +181,9 @@ class Match(models.Model):
     # 喜欢:1, 不喜欢0
     option = models.IntegerField(default=0)
     create_time = models.DateTimeField(auto_now_add=True)
+
+class UserImage(models.Model):
+    user_sha1 = models.CharField(max_length=40)
+    image_url = models.URLField()
+    status_sha1 = models.CharField(max_length=40)
 

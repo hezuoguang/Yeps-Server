@@ -9,6 +9,19 @@ from Yep.response_status import ZGError
 from Yep import system_tags, system_schools
 from Yep import tools, qiniu_tools
 
+def create_test_user():
+    phone = 98765432100
+    pwd = tools.md5_pwd('123456')
+    sex_list = ['男', '女', '女', '男', '男', '女']
+    for i in range(0, 1000):
+        t = str(phone + i)
+        sex = sex_list[i % len(sex_list)]
+        photo = "http://7xrlo2.com1.z0.glb.clouddn.com/087540af917a627d3ea95bedd1371529"
+        try:
+            db_tools.create_user(t, t, pwd, photo, sex, ['Python', 'IOS'], "怀化学院")
+        except Exception,e:
+            print(e)
+
 def init_response_result():
     result = {}
     result["ret"] = Status.OK
@@ -95,6 +108,17 @@ def status_list(access_token, since_id=-1, max_id=-1, type=-1, count=20, is_foll
         return db_tools.get_new_status_list(access_token, since_id, type, count, is_follow)
     return db_tools.get_old_status_list(access_token, max_id, type, count, is_follow)
 
+# 获取某个用户status_list
+def user_status_list(access_token, user_sha1, since_id=-1, max_id=-1, count=20):
+    # 获取新的
+    if since_id != -1 or max_id == -1:
+        return db_tools.get_new_user_status_list(access_token, user_sha1, since_id, count)
+    return db_tools.get_old_user_status_list(access_token, user_sha1, max_id, count)
+
+#获取status详情
+def status_detail(access_token, status_sha1):
+    return db_tools.status_detail(access_token, status_sha1)
+
 # 获取评论列表
 def comment_list(access_token, status_sha1, max_id):
     return db_tools.comment_list(access_token, status_sha1, max_id)
@@ -149,8 +173,35 @@ def update_pwd(access_token, old_pwd, new_pwd):
 
 #更新用户简介
 def update_intro(access_token, intro):
-    return db_tools.update_intro(access_token, intro)
+    tmp_str = ''
+    for t in intro.splitlines():
+        t = t.rstrip() + '\n'
+        if t == '\n':
+            continue
+        tmp_str = tmp_str + t
+    return db_tools.update_intro(access_token, tmp_str)
 
 #更新用户信息
 def update_info(access_token, nick, email, sex, birthday):
     return db_tools.update_info(access_token, nick, email, sex, birthday)
+
+# 获取自己资料
+def get_user_info(access_token):
+    return db_tools.get_self_info(access_token)
+
+#获取其他用信息
+def get_other_user_info(access_token, user_sha1):
+    return db_tools.get_other_user_info(access_token, user_sha1)
+
+# 获取用户状态照片列表
+def status_image_list(access_token, user_sha1, max_id):
+    return db_tools.status_image_list(access_token, user_sha1, max_id)
+
+# 获取系统推荐用户列表
+def recommend_user_list(access_token, max_id, count):
+    return db_tools.recommend_user_list(access_token, max_id, count)
+
+# 匹配操作
+def match_option(access_token, user_sha1, is_match):
+    return db_tools.match_option(access_token, user_sha1, is_match)
+
