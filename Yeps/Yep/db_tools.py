@@ -2,6 +2,7 @@
 
 import hashlib, datetime, json, pdb
 from django.db import transaction
+from django.db.models import Q
 from Yep.models import *
 from Yep.response_status import Status as ReStatus
 from Yep.response_status import ZGError
@@ -26,7 +27,8 @@ def get_user_basic_info(user_sha1):
     user_info = dict(
         user_sha1 = user.sha1,
         nick = user.nick,
-        photo = user.photo
+        photo = user.photo,
+        intro = user.intro
     )
     return user_info
 
@@ -40,6 +42,16 @@ def get_user_info(user_sha1):
 def get_other_info(access_token, other_user_sha1):
     user = user_with_access_token(access_token)
     return get_other_info_with_user_sha1(user.sha1, other_user_sha1)
+
+#获取其他用户基本资料
+def get_other_user_base_info(user_sha1, other_user_sha1):
+    other_user_info = get_user_basic_info(other_user_sha1)
+    followR = Follow.objects.filter(user_sha1=user_sha1, other_user_sha1=other_user_sha1)
+    if followR:
+        other_user_info['is_follow'] = 1
+    else:
+        other_user_info['is_follow'] = 0
+    return other_user_info
 
 #获取其他用户资料
 def get_other_info_with_user_sha1(user_sha1, other_user_sha1):
@@ -620,3 +632,50 @@ def match_option(access_token, user_sha1, is_match):
         create_message(user.sha1, other_user.sha1, content)
         create_message(other_user.sha1, user.sha1, content)
     return {}
+
+# 搜索用户
+def search_user_list(access_token, key, max_id, count):
+    user = user_with_access_token(access_token)
+    if max_id == -1:
+        users = User.objects.filter(phone__icontains=key).exclude(sha1=user.sha1).order_by('-id')[0:count]
+    else:
+        users = User.objects.filter(id__lt=max_id,phone__icontains=key).exclude(sha1=user.sha1).order_by('-id')[0:count]
+
+    user_list = []
+    for u in users:
+        info = get_other_user_base_info(user.sha1, u.sha1)
+        info['search_id'] = u.id
+        user_list.append(info)
+    return user_list
+
+# 获取关注列表
+def follow_user_list(access_token, user_sha1, max_id, count):
+    user = User.objects.get(sha1=user_sha1)
+    my = user_with_access_token(access_token)
+    if max_id == -1:
+        follows = Follow.objects.filter(user_sha1=user.sha1).order_by('-id')[0:count]
+    else:
+        follows = Follow.objects.filter(id__lt=max_id,user_sha1=user.sha1).order_by('-id')[0:count]
+
+    user_list = []
+    for f in follows:
+        info = get_other_user_base_info(my.sha1, f.other_user_sha1)
+        info['follow_id'] = f.id
+        user_list.append(info)
+    return user_list
+
+# 获取粉丝列表
+def fans_user_list(access_token, user_sha1, max_id, count):
+    user = User.objects.get(sha1=user_sha1)
+    my = user_with_access_token(access_token)
+    if max_id == -1:
+        follows = Follow.objects.filter(other_user_sha1=user.sha1).order_by('-id')[0:count]
+    else:
+        follows = Follow.objects.filter(id__lt=max_id,other_user_sha1=user.sha1).order_by('-id')[0:count]
+
+    user_list = []
+    for f in follows:
+        info = get_other_user_base_info(my.sha1, f.user_sha1)
+        info['follow_id'] = f.id
+        user_list.append(info)
+    return user_list

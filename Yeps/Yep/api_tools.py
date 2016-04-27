@@ -194,14 +194,25 @@ def get_other_user_info(access_token, user_sha1):
     return db_tools.get_other_user_info(access_token, user_sha1)
 
 # 获取用户状态照片列表
-def status_image_list(access_token, user_sha1, max_id):
+def status_image_list(access_token, user_sha1, max_id=-1):
     return db_tools.status_image_list(access_token, user_sha1, max_id)
 
 # 获取系统推荐用户列表
-def recommend_user_list(access_token, max_id, count):
+def recommend_user_list(access_token, max_id=-1, count=30):
     return db_tools.recommend_user_list(access_token, max_id, count)
 
 # 匹配操作
 def match_option(access_token, user_sha1, is_match):
     return db_tools.match_option(access_token, user_sha1, is_match)
 
+# 搜索用户
+def search_user_list(access_token, key, max_id=-1, count=20):
+    return db_tools.search_user_list(access_token, key, max_id, count)
+
+# 获取关注列表
+def follow_user_list(access_token, user_sha1, max_id=-1, count=20):
+    return db_tools.follow_user_list(access_token, user_sha1, max_id, count)
+
+# 获取粉丝列表
+def fans_user_list(access_token, user_sha1, max_id=-1, count=20):
+    return db_tools.fans_user_list(access_token, user_sha1, max_id, count)

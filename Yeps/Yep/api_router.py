@@ -371,6 +371,29 @@ class ManageApi:
     # 获取用户关注列表
     def follow_user_list(self, request, params):
         result = init_response_result()
+        try:
+            access_token = params['access_token']
+            user_sha1 = params['user_sha1']
+            max_id = int(params.get('max_id', -1))
+            count = int(params.get('count', 20))
+            result["data"]["user_list"] = api_tools.follow_user_list(access_token, user_sha1, max_id, count)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
+        return result
+
+    # 获取用户粉丝列表
+    def fans_user_list(self, request, params):
+        result = init_response_result()
+        try:
+            access_token = params['access_token']
+            user_sha1 = params['user_sha1']
+            max_id = int(params.get('max_id', -1))
+            count = int(params.get('count', 20))
+            result["data"]["user_list"] = api_tools.fans_user_list(access_token, user_sha1, max_id, count)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
         return result
 
     # 获取系统推荐用户列表
@@ -389,6 +412,15 @@ class ManageApi:
     # 搜索用户
     def search_user_list(self, request, params):
         result = init_response_result()
+        try:
+            access_token = params['access_token']
+            max_id = int(params.get('max_id', -1))
+            count = int(params.get('count', 20))
+            key = params['key']
+            result["data"]["user_list"] = api_tools.search_user_list(access_token, key, max_id, count)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
         return result
 
     # 获取其他用户资料

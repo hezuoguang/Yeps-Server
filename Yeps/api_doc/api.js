@@ -1093,6 +1093,43 @@ var api_data = [
         }
     },
 
+    // 获取用户粉丝列表
+    {
+        "name": "获取用户粉丝列表",
+        "url": "/yeps/api/",
+        "method": "POST",
+        "params": {
+            "action": "fans_user_list",
+            "data": {
+                "access_token":"授权码",
+                "max_id":"获取follow_id < max_id的最新数据,可选,默认返回最新",
+                "count":"可选,最大不超过50,默认返回20条",
+            },
+        },
+        "response": {
+            "info": "OK",
+            "ret": "0001",
+            'data':{
+                "user_list":[
+                    {
+                        "follow_id":"",
+                        "user_sha1":"user_sha1",
+                        "nick":"昵称",
+                        "photo":"头像url",
+                    }
+                ],
+                "total_count":"总关注数"
+            }
+        },
+        "note": {
+            "请求参数": "-------------",
+            "返回参数": "-------------",
+            "info": "OK",
+            "ret": "0001",
+            
+        }
+    },
+
     // 获取系统推荐用户列表
     {
         "name": "获取系统推荐用户列表",
@@ -1140,7 +1177,7 @@ var api_data = [
                 "access_token":"授权码",
                 "max_id":"获取user_id < max_id的最新数据,可选,默认返回最新",
                 "count":"可选,最大不超过50,默认返回20条",
-                "key":"搜索关键字(匹配nick)",
+                "key":"搜索关键字(匹配nick/手机号)",
             },
         },
         "response": {
@@ -1149,7 +1186,7 @@ var api_data = [
             'data':{
                 "user_list":[
                     {
-                        "follow_id":"",
+                        "search_id":"",
                         "user_sha1":"user_sha1",
                         "nick":"昵称",
                         "photo":"头像url",
