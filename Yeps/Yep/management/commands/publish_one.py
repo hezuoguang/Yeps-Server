@@ -10,7 +10,7 @@ class Command(BaseCommand):
             try:
                 count = int(args[0])
             except:
-                count = 10
+                count = 5
             photo_host = "http://7xrlo2.com1.z0.glb.clouddn.com/"
             for i in range(count):
                 tester_count = User.objects.filter(is_tester=1).count()
