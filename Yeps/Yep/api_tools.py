@@ -9,19 +9,6 @@ from Yep.response_status import ZGError
 from Yep import system_tags, system_schools
 from Yep import tools, qiniu_tools
 
-def create_test_user():
-    phone = 98765432100
-    pwd = tools.md5_pwd('123456')
-    sex_list = ['男', '女', '女', '男', '男', '女']
-    for i in range(0, 1000):
-        t = str(phone + i)
-        sex = sex_list[i % len(sex_list)]
-        photo = "http://7xrlo2.com1.z0.glb.clouddn.com/087540af917a627d3ea95bedd1371529"
-        try:
-            db_tools.create_user(t, t, pwd, photo, sex, ['Python', 'IOS'], "怀化学院")
-        except Exception,e:
-            print(e)
-
 def init_response_result():
     result = {}
     result["ret"] = Status.OK
@@ -216,3 +203,8 @@ def follow_user_list(access_token, user_sha1, max_id=-1, count=20):
 # 获取粉丝列表
 def fans_user_list(access_token, user_sha1, max_id=-1, count=20):
     return db_tools.fans_user_list(access_token, user_sha1, max_id, count)
+
+# 获取消息列表
+def message_list(access_token, max_id=-1, count=20):
+    return db_tools.message_list(access_token, max_id, count)
+

@@ -65,6 +65,8 @@ class User(models.Model):
     image_list = models.TextField(default="[]")
     # 授权码
     access_token = models.CharField(max_length=32)
+    # 是否是测试账号
+    is_tester = models.IntegerField(default=0)
 
 
 # 已激活的大学
@@ -167,10 +169,14 @@ class Message(models.Model):
     user_sha1 = models.CharField(max_length=40)
     # 消息产生者
     other_sha1 = models.CharField(max_length=40)
+    # 对象的状态sha1 type=0|3为 status_sha1 type=2|1 为user_sha1
+    obj_sha1 = models.CharField(max_length=40, default="")
     # 消息内容
-    content = EmojiTextField(default="")
+    content = models.CharField(max_length=1024, default="")
     # 消息状态 0 未读, 1 已读, 2 删除
     status = models.IntegerField(default=0)
+    # 消息类型 0 评论, 1 匹配交友成功 2 关注 3 分享
+    type = models.IntegerField(default=0)
     create_time = models.DateTimeField(auto_now_add=True)
 
 
@@ -186,4 +192,14 @@ class UserImage(models.Model):
     user_sha1 = models.CharField(max_length=40)
     image_url = models.URLField()
     status_sha1 = models.CharField(max_length=40)
+
+# 抓取One的内容
+class OneContent(models.Model):
+    #内容的标号
+    count = models.IntegerField()
+    title = EmojiTextField(default="")
+    content = EmojiTextField(default="")
+    #是否已发布 0 未发布, 1已发布
+    status = models.IntegerField(default=0)
+
 

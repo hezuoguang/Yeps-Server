@@ -449,6 +449,14 @@ class ManageApi:
     # 获取消息列表
     def message_list(self, request, params):
         result = init_response_result()
+        try:
+            access_token = params['access_token']
+            max_id = int(params.get('max_id', -1))
+            count = int(params.get('count', 20))
+            result["data"]["message_list"] = api_tools.message_list(access_token, max_id, count)
+        except Exception,e:
+            result = api_tools.dowith_error(e, result)
+            return result
         return result
 
     # 将消息设为已读
@@ -486,6 +494,7 @@ class ManageApi:
             result = api_tools.dowith_error(e, result)
             return result
         return result
+
 
 manage_api = ManageApi()
 # api路由

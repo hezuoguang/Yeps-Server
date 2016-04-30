@@ -1317,10 +1317,11 @@ var api_data = [
                         "message_id":"",
                         "message_sha1":"",
                         "content":"消息内容",
-                        "type":"0 未读, 1 已读",
+                        "type":"0 评论...",
+                        "obj_sha1":"",
+                        "time":"",
                     }
                 ],
-                "total_count":"总消息条数",
             }
         },
         "note": {

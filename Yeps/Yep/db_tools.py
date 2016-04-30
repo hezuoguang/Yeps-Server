@@ -109,8 +109,7 @@ def get_user_full_info(user_sha1):
     return user_info
 
 # 创建一个用户
-@transaction.commit_on_success()
-def create_user(nick, phone, pwd, photo, sex, tag_list, university):
+def create_user(nick, phone, pwd, photo, sex, tag_list, university, birthday=None):
     now = datetime.datetime.now()
     sha1 = tools.sha1_with_args(phone, str(now))
     user = User()
@@ -124,6 +123,8 @@ def create_user(nick, phone, pwd, photo, sex, tag_list, university):
     user.university = university
     user.active_university = university
     user.access_token = tools.init_access_token(sha1, pwd)
+    if birthday:
+        user.birthday = birthday
     user.save()
     active_university = ActiveUniversity.objects.filter(university=university).first()
     if not active_university:
@@ -441,7 +442,8 @@ def publish_comment(access_token, content, status_sha1, comment_sha1):
     data = dict()
     data['comment'] = comment_to_dict(comment)
     data.update(status_count(access_token, status_sha1))
-
+    if user.sha1 != status.user_sha1:
+        create_message(status.user_sha1,user.sha1,"评论了你的状态",status.sha1,0)
     return data
 
 # 点赞/取消点赞
@@ -468,6 +470,9 @@ def share_count_add(access_token, status_sha1):
     status = Status.objects.get(sha1=status_sha1)
     status.share_count += 1
     status.save()
+    if user.sha1 != status.user_sha1:
+        content = "分享了你的状态"
+        create_message(status.user_sha1,user.sha1,content,status.sha1,3)
     return status_count(access_token, status_sha1)
 
 # 关注
@@ -483,6 +488,7 @@ def follow(access_token, user_sha1):
     followShip.user_sha1 = user.sha1
     followShip.other_user_sha1 = other_user.sha1
     followShip.save()
+    create_message(user_sha1,user.sha1,"关注了你",user.sha1,2)
     return {}
 
 # 取消关注
@@ -602,12 +608,15 @@ def recommend_user_list(access_token, max_id, count):
     return user_list
 
 # 创建消息
-def create_message(user_sha1, other_user_sha1, content):
+def create_message(user_sha1, other_user_sha1, content, obj_sha1=None, type=0):
     now = datetime.datetime.now()
     sha1 = tools.sha1_with_args(user_sha1, other_user_sha1, str(now))
     message = Message()
     message.sha1 = sha1
     message.user_sha1 = user_sha1
+    message.type = type
+    if type == 0 or type == 2:#评论/分享
+        message.obj_sha1 = obj_sha1
     message.other_sha1 = other_user_sha1
     message.content = content
     message.save()
@@ -629,8 +638,8 @@ def match_option(access_token, user_sha1, is_match):
     success = Match.objects.filter(user_sha1=other_user.sha1, other_user_sha1=user.sha1, option=1).first()
     if success:
         content = '匹配成功'
-        create_message(user.sha1, other_user.sha1, content)
-        create_message(other_user.sha1, user.sha1, content)
+        create_message(user.sha1, other_user.sha1, content, other_user.sha1, 1)
+        create_message(other_user.sha1, user.sha1, content, user.sha1,1)
     return {}
 
 # 搜索用户
@@ -679,3 +688,27 @@ def fans_user_list(access_token, user_sha1, max_id, count):
         info['follow_id'] = f.id
         user_list.append(info)
     return user_list
+
+def message_to_dict(message):
+    tmp = {}
+    tmp['other_user'] = get_user_basic_info(message.other_sha1)
+    tmp['content'] = message.content
+    tmp['type'] = message.type
+    tmp['message_id'] = message.id
+    tmp['message_sha1'] = message.sha1
+    tmp['obj_sha1'] = message.obj_sha1
+    tmp['time'] = tools.date_time_to_str(message.create_time)
+    return tmp
+
+
+# 获取消息列表
+def message_list(access_token, max_id, count):
+    user = user_with_access_token(access_token)
+    if max_id == -1:
+        messages = Message.objects.filter(user_sha1=user.sha1).order_by('-id')[0:count]
+    else:
+        messages = Message.objects.filter(id__lt=max_id,user_sha1=user.sha1).order_by('-id')[0:count]
+    message_data_list = []
+    for message in messages:
+        message_data_list.append(message_to_dict(message))
+    return message_data_list
