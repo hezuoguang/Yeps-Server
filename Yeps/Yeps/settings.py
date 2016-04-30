@@ -91,6 +91,8 @@ STATIC_URL = '/static/'
 TEMPLATE_DIRS = (os.path.join(BASE_DIR,  'templates'),)
 
 CRONJOBS = [
-    ('*/5 * * * *', 'Yep.cron.cron_commands.create_test_user'),
-    ('*/1 * * * *', 'Yep.cron.cron_commands.publish_one')
+    # ('*/5 * * * *', 'Yep.cron.cron_commands.create_test_user'),
+    # ('*/1 * * * *', 'Yep.cron.cron_commands.publish_one')
+    ('*/10 * * * *', 'django.core.management.call_command', ['create_test_user']),
+    ('*/50 * * * *', 'django.core.management.call_command', ['publish_one']),
 ]
