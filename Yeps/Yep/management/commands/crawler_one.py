@@ -11,7 +11,11 @@ class Command(BaseCommand):
             start = max_one.count
         for i in range(count):
             index = i + start + 1
-            p = pyquery.PyQuery("http://caodan.org/"+str(index)+"-photo.html")
+            try:
+                p = pyquery.PyQuery("http://caodan.org/"+str(index)+"-photo.html")
+            except Exception,e:
+                print(e)
+                continue
             title = p(".entry-title").text()
             content = p("blockquote").find("p").eq(0).text()
             if len(title) <= 0 or len(content) <= 0:
