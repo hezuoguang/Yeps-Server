@@ -25,11 +25,14 @@ class Command(BaseCommand):
                 type = random.randint(0, 5)
                 if type == 1:
                     type = 0
-                api_tools.publish_status(tester.access_token,one.title,one.content,[image_url],type)
-                tester.last_active_time = datetime.datetime.now()
-                tester.save()
-                one.status = 1
-                one.save()
-                print("success --- " + tester.university)
+                try:
+                    api_tools.publish_status(tester.access_token,one.title,one.content,[image_url],type)
+                    tester.last_active_time = datetime.datetime.now()
+                    tester.save()
+                    one.status = 1
+                    one.save()
+                    print("success --- " + tester.university)
+                except Exception,e:
+                    print(e)
         except Exception,e:
             print(e)
