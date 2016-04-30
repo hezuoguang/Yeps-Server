@@ -15,7 +15,7 @@ class Command(BaseCommand):
             title = p(".entry-title").text()
             content = p("blockquote").find("p").eq(0).text()
             if len(title) <= 0 or len(content) <= 0:
-                break
+                continue
             # titles = title.split(' ', 1)
             # if len(titles) > 1:
             #     title = titles[1]

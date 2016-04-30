@@ -62,11 +62,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="settings.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Yeps/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.8758465">
-              <caret line="95" column="9" selection-start-line="95" selection-start-column="9" selection-end-line="95" selection-end-column="9" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="84" column="0" selection-start-line="84" selection-start-column="0" selection-end-line="84" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -112,11 +112,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="crawler_one.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="crawler_one.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Yep/management/commands/crawler_one.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="15" column="47" selection-start-line="15" selection-start-column="47" selection-end-line="15" selection-end-column="47" />
+            <state vertical-scroll-proportion="0.3544018">
+              <caret line="17" column="24" selection-start-line="17" selection-start-column="24" selection-end-line="17" selection-end-column="24" />
               <folding>
                 <element signature="e#14#65#0" expanded="true" />
               </folding>
@@ -170,11 +170,11 @@
         <option value="$PROJECT_DIR$/Yep/pynamesgenerator.py" />
         <option value="$PROJECT_DIR$/Yep/models.py" />
         <option value="$PROJECT_DIR$/Yep/management/commands/publish_one" />
-        <option value="$PROJECT_DIR$/Yep/management/commands/crawler_one.py" />
         <option value="$PROJECT_DIR$/Yep/management/commands/create_test_user.py" />
         <option value="$PROJECT_DIR$/Yep/management/commands/publish_one.py" />
         <option value="$PROJECT_DIR$/Yep/cron/cron_commands.py" />
         <option value="$PROJECT_DIR$/Yeps/settings.py" />
+        <option value="$PROJECT_DIR$/Yep/management/commands/crawler_one.py" />
       </list>
     </option>
   </component>
@@ -1087,16 +1087,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Yep/management/commands/crawler_one.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="15" column="47" selection-start-line="15" selection-start-column="47" selection-end-line="15" selection-end-column="47" />
-          <folding>
-            <element signature="e#14#65#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Yep/management/commands/create_test_user.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1119,9 +1109,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Yeps/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8758465">
-          <caret line="95" column="9" selection-start-line="95" selection-start-column="9" selection-end-line="95" selection-end-column="9" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="84" column="0" selection-start-line="84" selection-start-column="0" selection-end-line="84" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Yep/management/commands/crawler_one.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3544018">
+          <caret line="17" column="24" selection-start-line="17" selection-start-column="24" selection-end-line="17" selection-end-column="24" />
+          <folding>
+            <element signature="e#14#65#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
