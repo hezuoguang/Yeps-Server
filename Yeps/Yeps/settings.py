@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Yep',
+    'django_crontab',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -88,3 +89,8 @@ STATIC_ROOT = '/static/'
 STATIC_URL = '/static/'
 
 TEMPLATE_DIRS = (os.path.join(BASE_DIR,  'templates'),)
+
+CRONJOBS = [
+    ('*/5 * * * *', 'Yep.cron.cron_commands.create_test_user'),
+    ('*/1 * * * *', 'Yep.cron.cron_commands.publish_one')
+]

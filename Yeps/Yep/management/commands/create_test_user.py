@@ -1,5 +1,5 @@
 #coding:utf-8
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand,CommandError
 import hashlib, random, datetime, json
 from Yep.models import User
 from Yep import api_tools
@@ -44,7 +44,10 @@ class Command(BaseCommand):
                 print(e)
     def handle(self, *args, **options):
         try:
-            count = int(args[0])
+            try:
+                count = int(args[0])
+            except:
+                count = 10
             self.create_test_user(count)
         except Exception,e:
             print(e)
