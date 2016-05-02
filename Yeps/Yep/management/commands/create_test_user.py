@@ -31,7 +31,7 @@ class Command(BaseCommand):
                 api_tools.register(nick, tphone, pwd, photo, sex, ['Python', 'IOS'], university)
                 # db_tools.create_user(nick, tphone, pwd, photo, sex, ['Python', 'IOS'], university, birthday)
                 user = User.objects.get(phone=tphone)
-                date = datetime.datetime.now() - datetime.timedelta(hours=random.randint(2,27))
+                date = datetime.datetime.now() - datetime.timedelta(hours=random.randint(2,27),minutes=random.randint(2,58))
                 user.last_active_time = date
                 user.create_time = date
                 image_list = [photo]
