@@ -1,0 +1,115 @@
+{% load staticfiles %}
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>Yeps -- 详情</title>
+	<script type="text/javascript" src="{% static 'js/fontSize.js' %}"></script>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+	<header>
+		<a href="###"><img src="{% static 'images/nav/nav_back@3x.png' %}"></a>
+	</header>
+	<section>
+    <div class="status-cell">
+        <div class="user-logo over-hidden padding10">
+			<img src="{{ status.create_user.photo }}">
+			<div class="logo-text">
+				<h3>{{ status.create_user.nick }}</h3>
+				<p>
+					{{ status.create_time }}
+				</p>
+			</div>
+			<span>{{ status.type_info }}</span>
+		</div>
+		<div class="user-posts">
+			<h2 class="posts-title padding10">
+				{{ status.title }}
+			</h2>
+			<p class="posts-text-detail over-hidden padding10">
+				{{ status.content }}
+			</p>
+			<div class="post-img-detail over-hidden" style="background: url({{ status.image_list.0 }}) no-repeat center center;background-size: cover;">
+            </div>
+            {% if status.type == 1 %}
+			<div class="user-vote over-hidden">
+				<ul>
+                    {% for vote in vote_list %}
+					<li>
+						<div class="vote-core" style="width: {{ vote.pe }}%;"></div>
+						<span>{{ vote.title }}({{ vote.count }}/{{ vote.total }})</span>
+					</li>
+                    {% endfor %}
+				</ul>
+			</div>
+            {% endif %}
+			<div class="post-options-button padding10">
+                {% if status.share_count == 0 %}
+                <a href="#" class="share-button">分享(0)</a>
+                {% else %}
+                    <a href="#" class="share-button">分享({{ status.share_count }})</a>
+                {% endif %}
+
+                {% if status.comment_conut == 0 %}
+                <a href="#" class="comment-button">评论(0)</a>
+                {% else %}
+                    <a href="#" class="comment-button">评论({{ status.comment_conut }})</a>
+                {% endif %}
+
+                {% if status.like_count == 0 %}
+                <a href="#" class="likes-button">点赞(0)</a>
+                {% else %}
+                    <a href="#" class="likes-button">点赞({{ status.like_count }})</a>
+                {% endif %}
+			</div>
+			<div class="comment-users over-hidden padding10">
+                {% for comment in comment_list %}
+				<div class="comment-own over-hidden">
+					<div class="f-left comment-img">
+						<img src="{{ comment.create_user.photo }}">
+						<p>
+							{{ comment.create_time|date:"Y-m-d"}}
+						</p>
+					</div>
+					<div class="comment-text f-left">
+						<h3 class="user-name">
+							{{ comment.create_user.nick }}
+						</h3>
+						<div class="comment-text-detail">
+							<div class="triangle-left"></div>
+                            {{ comment.content }}
+						</div>
+					</div>
+				</div>
+                {% endfor %}
+				<!--<div class="comment-other over-hidden">
+					<div class="f-right comment-img">
+						<img src="http://7xrlo2.com1.z0.glb.clouddn.com/82ef50e158147bcdb691e166b3d3122e">
+						<p>
+							昨天 18点28分
+						</p>
+					</div>
+					<div class="comment-text f-right">
+						<h3 class="user-name">
+							马玲
+						</h3>
+						<div class="comment-text-detail">
+							<div class="triangle-right"></div>
+
+								dkdddfffffffffffffffffffffffffffffff
+
+						</div>
+					</div>
+				</div>!-->
+			</div>
+		</div>
+    </div>
+
+	</section>
+{#	<footer style="text-align: center;font-size: small">#}
+{#		<p>Powered by weimi. © dev4app.com.</p>#}
+{#	</footer>#}
+</body>
+</html>

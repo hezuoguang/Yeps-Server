@@ -311,6 +311,23 @@ def status_detail(access_token, status_sha1):
     status = Status.objects.get(sha1=status_sha1)
     return status_to_dict(user, status,True)
 
+#分享页面获取status 详情
+def share_status_detail(status_sha1):
+    status = Status.objects.get(sha1=status_sha1)
+    user = User.objects.get(sha1=status.user_sha1)
+    return status_to_dict(user,status,is_detail=True)
+
+#分享页面获取评论列表
+def share_comment_list(status_sha1):
+    comments = Comment.objects.filter(status_sha1=status_sha1, status=0).order_by('-id')[0:30]
+    com_list = []
+    for comment in comments:
+        #id小的在前
+        comment_dict = comment_to_dict(comment)
+        comment_dict['create_time'] = comment.create_time
+        com_list.insert(0,comment_dict)
+    return com_list
+
 # 获取评论列表
 def comment_list(access_token, status_sha1, max_id):
     if max_id == -1:

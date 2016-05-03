@@ -4,6 +4,8 @@ from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf import settings
 
+from Yep import views
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -12,6 +14,7 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^share/', views.share_view),
 )
 
 urlpatterns += patterns('Yep.api_router',
